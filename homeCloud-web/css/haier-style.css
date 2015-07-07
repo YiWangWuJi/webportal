@@ -1,0 +1,45 @@
+@charset "utf-8";
+/*
+*	style reset base.
+*	@Author Nlwy update 2015-07-04.
+*	Copyright haier 2015.
+*/
+body { background: #48c0d8; font-family: microsoft yahei; overflow-x: hidden; }
+.main { max-width: 960px; margin: 0 auto; overflow: hidden; }
+header { overflow: hidden; max-width: 960px; margin: 20px auto 0; background: #303030; height: 60px; border-radius:10px 10px 0 0; }
+.logo { float: left; margin: 15px 0 0 20px; }
+.search { float: right; padding-right: 20px; }
+.search_box { position: relative; display: inline-block; margin: 16px 30px 0 0; width: 280px; height: 28px; background: #fff; border-radius: 5px; box-shadow: -1px 0 3px rgba(0,0,0,.3) inset; }
+.search_box but { cursor: pointer; display: block; position: absolute; height: 28px; width: 28px; right: 5px; top: 0px; background: url(../images/search.png) center no-repeat; }
+.search input { padding: 0 30px 0 18px; width: 280px; height: 28px; }
+.search input::-webkit-input-placeholder,.search input::-moz-placeholder { color: #c8c5c5; }
+.search a { color: #00c8e0; font-size: 12px; margin-right: 10px; }
+.search a:hover { text-decoration: underline; }
+content > article { overflow: hidden; width: 960px; background: #fff; margin: 0 auto; border-radius: 0 0 10px 10px; display: flex; }
+/*左侧导航*/
+nav { float: left; min-width: 195px; background: #e2e2e2; border-right: 1px solid #aaa; padding: 5px 0; }
+nav li { margin-left:2px; margin-right: -1px; cursor: pointer; padding: 10px 0; font-size: 13px; color: #5e5e5e; height: 100px; text-align: center; }
+nav li span { display: inline-block; width: 57px; height: 57px; background: url(../images/nav.png) no-repeat; }
+nav li:hover,nav li.now { background: #fff; border-left:2px solid #00c8e0; border-right: 2px solid #fff; }
+nav li p { text-align: center; margin-top: 5px; }
+nav li:nth-child(2) span { background-position: 0 -57px; }
+nav li:nth-child(3) span { background-position: 0 -114px; }
+nav li:nth-child(4) span { background-position: 0 -171px; }
+nav li:nth-child(5) span { background-position: 0 -228px; }
+nav li:nth-child(6) span { background-position: 0 -285px; }
+nav li:nth-child(7) span { background-position: 0 -342px; }
+nav li:nth-child(8) span { background-position: 0 -399px; }
+nav li:nth-child(9) span { background-position: 0 -456px; }
+nav li:nth-child(1):hover span,nav li:nth-child(1).now span { background-position: -57px 0; }
+nav li:nth-child(2):hover span,nav li:nth-child(2).now span { background-position: -57px -57px; }
+nav li:nth-child(3):hover span,nav li:nth-child(3).now span { background-position: -57px -114px; }
+nav li:nth-child(4):hover span,nav li:nth-child(4).now span { background-position: -57px -171px; }
+nav li:nth-child(5):hover span,nav li:nth-child(5).now span { background-position: -57px -227px; }
+nav li:nth-child(6):hover span,nav li:nth-child(6).now span { background-position: -57px -283px; }
+nav li:nth-child(7):hover span,nav li:nth-child(7).now span { background-position: -57px -341px; }
+nav li:nth-child(8):hover span,nav li:nth-child(8).now span { background-position: -57px -399px; }
+nav li:nth-child(9):hover span,nav li:nth-child(9).now span { background-position: -57px -456px; }
+/*右侧信息部分*/
+.infor,.infor_box { width: 100%; }
+.infor_box { padding: 20px 0; }
+.infor_box h2 { padding-left: 50px; height: 45px; line-height: 45px; font-size: 15px; background: #f4f0f0; color: #5e5e5e; }
