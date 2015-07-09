@@ -1,0 +1,5 @@
+1、只要一调用获取dhcp配置信息的接口，就提示header中没有access-control-allow-origin，不能跨域，并且别的接口也用不了了
+2、保存lan设置的接口，没有传ip地址和dhcp服务器选项参数的地方(没找到用哪个接口)
+3、获取wifi物理层信息接口调用没反应,无法返回
+4、获取wifi配置信息接口返回的参数与文档里的不一致，文档的是ssid，hiddenSsid，algorithms，key，实际接口返回的是ssid，hidden，key，encryption,并且文档没有指明encryption的可选值
+5、设置wifi配置信息接口加token无法调用，不加token提示不可跨域
