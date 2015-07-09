@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+	<title>无线wifi设置-海尔路由器管理系统</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="imagetoolbar" content="no" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" href="css/haier-base.css">
+	<link rel="stylesheet" href="css/haier-style.css">
+	<script src="js/jquery-2.1.1.min.js"></script>
+	<script src="js/haier-common.js"></script>
+	<script src="js/wireless-setting.js"></script>
+</head>
+<body>
+	<content>
+		<!-- 头部 -->
+		<header id="header"></header>
+		<!-- 内容 -->
+		<article id="content">
+			<!-- 左侧导航 -->
+			<nav></nav>
+			<!-- 右侧信息 -->
+			<article class="infor">
+				<section class="infor_box">
+					<h2><icon></icon>无线（wifi）设置</h2>
+					<!-- 拨号上网 -->
+					<ul class="wan_select">
+						<li class="check_list">
+							<span>2.4G</span>
+							<label><icon class="checkbox"><i></i></icon><input type="checkbox"></label>
+						</li>
+						<hr>
+						<li class="text">
+							<span>无线名称</span>
+							<input value="" placeholder="" type="text" name="2G_ssid">
+						</li>
+						<li class="check_list">
+							<span>是否广播SSID</span>
+							<label><icon name="2G_hidden" class="checkbox"><i></i></icon><input type="checkbox"></label>
+						</li>
+						<li class="select_list wifit">
+							<span>加密方式</span>
+							<section class="select">
+								<h3>不加密<icon></icon></h3>
+								<aside>
+									<a href="#" id="none_enc">不加密</a>
+									<a href="#" id="wpa_enc">WPA-PSK加密</a>
+									<a href="#" id="wpa2_enc">WPA2-PSK加密</a>
+								</aside>
+							</section>
+						</li>
+						<li class="select_list wifit">
+							<span>加密算法</span>
+							<section class="select">
+								<h3>AES/TKIP兼容<icon></icon></h3>
+								<aside>
+									<a href="#" id="aes_tkip">AES/TKIP兼容</a>
+									<a href="#" id="tkip">TKIP兼容</a>
+									<a href="#" id="aes">AES兼容</a>
+								</aside>
+							</section>
+						</li>
+						<li class="password">
+							<span>密码</span>
+							<input type="password" name="2G_password">
+							<icon></icon>
+						</li>
+						<li class="select_list wifit">
+							<span>传输功率</span>
+							<section class="select">
+								<h3>100<icon></icon></h3>
+								<aside>
+									<a href="#">200</a>
+									<a href="#">300</a>
+								</aside>
+							</section>
+						</li>
+						<li>
+							<p>如非必要，请勿改动下列设置。</p>
+						</li>
+						<li class="select_list wifit">
+							<span>网络模式</span>
+							<section class="select">
+								<h3>11bgn mixed<icon></icon></h3>
+								<aside>
+									<a href="#">22bgn mixed</a>
+									<a href="#">33bgn mixed</a>
+								</aside>
+							</section>
+						</li>
+						<li class="select_list wifit">
+							<span>信道</span>
+							<section class="select">
+								<h3>自动选择<icon></icon></h3>
+								<aside>
+									<a href="#">一号通道</a>
+									<a href="#">二号通道</a>
+								</aside>
+							</section>
+						</li>
+						<li class="select_list wifit">
+							<span>频道宽带</span>
+							<section class="select">
+								<h3>20/40Mhz<icon></icon></h3>
+								<aside>
+									<a href="#">40/60Mhz</a>
+									<a href="#">60/80Mhz</a>
+									<a href="#">80/100Mhz</a>
+								</aside>
+							</section>
+							<h5><icon></icon>会根据当前无线网络环境自动选择20或40频宽</h5>
+						</li>
+						<li class="select_list">
+							<span>频道宽带</span>
+							<input value="100" type="number">  ms(范围：20-1024)
+						</li>
+						<hr class="line">
+						<li class="check_list">
+							<span>5G</span>
+							<label><icon class="checkbox"><i></i></icon><input type="checkbox"></label>
+							<p>
+						</li>
+						<li class="radio_list">
+							<span></span>
+							<label style="width:auto"><icon class="radiocheck selected"></icon><input name="link" type="radio">应用与2.4G相同的设置</label></p>
+						</li>
+						<hr>
+						<li><p>如非必要，请勿改动下列设置。</p></li>
+						<li class="select_list wifit">
+							<span>网络模式</span>
+							<section class="select">
+								<h3>11bgn mixed<icon></icon></h3>
+								<aside>
+									<a href="#">22bgn mixed</a>
+									<a href="#">33bgn mixed</a>
+								</aside>
+							</section>
+						</li>
+						<li class="select_list wifit">
+							<span>信道</span>
+							<section class="select">
+								<h3>自动选择<icon></icon></h3>
+								<aside>
+									<a href="#">一号通道</a>
+									<a href="#">二号通道</a>
+								</aside>
+							</section>
+						</li>
+						<li class="select_list wifit">
+							<span>频道宽带</span>
+							<section class="select">
+								<h3>20/40Mhz<icon></icon></h3>
+								<aside>
+									<a href="#">40/60Mhz</a>
+									<a href="#">60/80Mhz</a>
+									<a href="#">80/100Mhz</a>
+								</aside>
+							</section>
+						</li>
+						<li><button style="margin-top:60px;" class="enterbut">保存设置</button></li>
+					</ul>
+				</section>
+			</article>
+		</article>
+		<!-- 底部 -->
+		<footer id="footer"><p>海尔集团版权所有（copyright &copy;   2015 Haier.All Right Reserved）</p></footer>
+		<script>window.nowPage = "wifi-setting"</script>
+	</content>
+</body>
+</html>
