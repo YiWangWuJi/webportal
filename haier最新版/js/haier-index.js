@@ -13,6 +13,7 @@ $(document).ready(function() {
 });
 var currentTime = (new Date()).getTime();
 var yMax = 0;
+var charsInterval;
 function getMax(maxValue) {
 	if (maxValue % 100 == 0) {
 		return maxValue;
@@ -39,13 +40,13 @@ var chars = {
                         // set up the updating of the chart each second             
                         var series = this.series[0];  
                         var series1 = this.series[1];
-                        setInterval(function(){
+                        charsInterval = setInterval(function(){
                             //alert(series.data.length);
                         	callRpc(rpcUrl + routeStateIndex.paramOperate.businessRouterType + token, routeStateIndex.paramOperate.method.getTrafficInfo, null, function(data){
-                        		//var currxrate = data.currxrate / 8;//实时接收速率(单位KB/s)
-                        		//var curtxrate = data.curtxrate / 8;//实时发送速率(单位KB/s)
-                        		var currxrate = Math.random() * 500;//实时接收速率(单位KB/s)
-                        		var curtxrate = Math.random() * 500;//实时发送速率(单位KB/s)
+                        		var currxrate = data.currxrate / 8;//实时接收速率(单位KB/s)
+                        		var curtxrate = data.curtxrate / 8;//实时发送速率(单位KB/s)
+//                        		var currxrate = Math.random() * 500;//实时接收速率(单位KB/s)
+//                        		var curtxrate = Math.random() * 500;//实时发送速率(单位KB/s)
                         		var x = (new Date()).getTime(); // current time
 	                        	$('#up_curtxrate').text(currxrate.toFixed(2) + "KB/s");
 	                        	$('#down_currxrate').text(curtxrate.toFixed(2) + "KB/s");
@@ -67,6 +68,7 @@ var chars = {
                         		series1.addPoint([x, curtxrate]);
                         	});
                         }, 1000); 
+                        common.intervalList.chartsInter = charsInterval;
                     }                                                               
                 }                                                                   
             },                                                                      
@@ -97,10 +99,10 @@ var chars = {
         	        width: 1,                                                       
         	        color: '#00c8e0'                                                
         	    }],
-        	    max: 100,
+        	    max: 10,
         	    min:0,
         	    tickInterval: 10,
-        	    tickAmount: 10,
+        	    tickAmount: 5,
         	    labels: {
         	        formatter:function(){
         	            return this.value + (this.value > 1000 ? "MB/s" : "KB/s");

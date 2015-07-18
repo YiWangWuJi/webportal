@@ -22,6 +22,7 @@ var loginIndex = {
 		 * 初始化加载
 		 */
 		init : function() {
+			this.checkSupportHtml5();
 			this.eventList.bindLoginButton();
 		},
 		/**
@@ -77,8 +78,22 @@ var loginIndex = {
 			console.log('token------>' + token);
 			common.localdata.setSiData('token',data);
 			window.location.href = common.getDomain() + '#routeState';
+		},
+		/**
+		 * 判断是否支持html5
+		 */
+		checkSupportHtml5 : function() {
+			 if (!window.applicationCache) {
+			 	var password = $('input[type="password"]');
+			 	var button = $('button');
+            	var passLi = password.parent();
+            	var buttonLi = button.parent();
+            	password.remove();
+            	button.remove();
+            	passLi.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您的浏览器不支持html5');
+            	buttonLi.html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请升级或更换浏览器');
+	         }
 		}
-		
 		
 }
 

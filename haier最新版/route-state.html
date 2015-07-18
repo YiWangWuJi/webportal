@@ -18,37 +18,55 @@
 			</ul>
 		</li>
 	</ul>	
-	<h2><icon class="wifiicon"></icon>无线设备<span><i class="refresh"></i><i class="setting"></i><i class="open"></i></span></h2>
+	<h2><icon class="wifiicon"></icon>无线设备<span><i class="refresh" id="wifiDeviceRefresh"></i><i class="setting" id="wifiDeviceSetting"></i><i class="open"></i></span></h2>
 	<ul class="wan_select cdevicelist">
 		<li id="device_0" style="display:block" >
-			<dl class="dev_mod editun">
-				<dt><icon></icon></dt>
-				<dd><input disabled="disabled" value="任维的苹果6" type="text"><input type="hidden" name="macaddr"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon><a href="javascript:void(0);">还原默认</a></dd>
-				<dd>连接方式：<icon class="wifi_2_4G"></icon></dd>
-			</dl>
+<!-- 			<dl class="dev_mod editun"> -->
+<!-- 				<dt><icon></icon></dt> -->
+<!-- 				<dd><input disabled="disabled" value="任维的苹果6" type="text"><input type="hidden" name="macaddr"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon></dd> -->
+<!-- 				<dd>连接方式：<icon class="wifi_2_4G"></icon></dd> -->
+<!-- 			</dl> -->
 		</li>
 	</ul>
-	<h2><icon class="lanicon"></icon>有线设备<span><i class="refresh"></i><i class="setting"></i><i class="open"></i></span></h2>
+<!-- 	<h2><icon class="lanicon"></icon>有线设备<span><i class="refresh"></i><i class="setting"></i><i class="open"></i></span></h2> -->
+<!-- 	<ul class="wan_select cdevicelist"> -->
+<!-- 		<li id="device_0" style="display:block" > -->
+<!-- 			<dl class="dev_mod editun"> -->
+<!-- 				<dt><icon></icon></dt> -->
+<!-- 				<dd><input disabled="disabled" value="任维的iwatch" type="text"><input type="hidden" name="macaddr"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon></dd> -->
+<!-- 				<dd>连接方式：<icon class="wifi_5G"></icon></dd> -->
+<!-- 			</dl> -->
+<!-- 		</li> -->
+<!-- 	</ul> -->
+	<h2><icon class="usbicon"></icon>外接USB设备<span><i class="refresh" id="diskRefresh"></i><i class="setting" id="diskSetting"></i><i class="open"></i></span></h2>
 	<ul class="wan_select cdevicelist">
-		<li id="device_0" style="display:block" >
-			<dl class="dev_mod editun">
-				<dt><icon></icon></dt>
-				<dd><input disabled="disabled" value="任维的iwatch" type="text"><input type="hidden" name="macaddr"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon><a href="javascript:void(0);">还原默认</a></dd>
-				<dd>连接方式：<icon class="wifi_5G"></icon></dd>
-			</dl>
-		</li>
-	</ul>
-	<h2><icon class="usbicon"></icon>外接USB设备<span><i class="refresh"></i><i class="setting"></i><i class="open"></i></span></h2>
-	<ul class="wan_select cdevicelist">
-		<li id="device_0" style="display:block" >
-			<dl class="dev_pc editun">
-				<dt><icon></icon></dt>
-				<dd><input disabled="disabled" value="CHENGGEN-MOBL" type="text"><input type="hidden" name="macaddr"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon><a href="javascript:void(0);">还原默认</a></dd>
-				<dd>连接方式：<icon class="wifi_2_4G"></icon></dd>
-			</dl>
+		<li id="device_1" style="display:block" >
+<!-- 			<dl class="dev_pc editun"> -->
+<!-- 				<dt><icon></icon></dt> -->
+<!-- 				<dd><input disabled="disabled" value="CHENGGEN-MOBL" type="text"></dd> -->
+<!-- 				<dd>设备类型：--</dd> -->
+<!-- 				<dd>总容量：--</dd> -->
+<!-- 				<dd>已用容量：--</dd> -->
+<!-- 			</dl> -->
 		</li>
 	</ul>
 </section>
+<script type="text/html" id="online_device">
+<dl class="dev_mod editun">
+	<dt><icon></icon></dt>
+	<dd><input disabled="disabled" value="[deviceName]" type="text"><input type="hidden" name="macaddr" value="[macaddr]"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon><icon class="user"></icon></dd>
+	<dd>连接方式：[band]</dd>
+</dl>
+</script>
+<script type="text/html" id="disk_device">
+<dl class="dev_pc editun">
+	<dt><icon></icon></dt>
+	<dd><input disabled="disabled" value="[diskName]" type="text"></dd>
+	<dd>设备类型：[diskType]</dd>
+	<dd>总容量：[totalSize]</dd>
+	<dd>已用容量：[useSize]</dd>
+</dl>
+</script>
 <script src="js/haier-charts.js"></script>
 <script src="js/haier-index.js"></script>
 <script src="js/route-state.js"></script>

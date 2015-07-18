@@ -178,17 +178,18 @@ var wanIndex = {
 			switch (wanSetting.attr('id')) {
 			case 'setting_1'://保存dhcp
 				paramArray.push('dhcp');
-				var dnsParam = wanIndex.getDynamicDnsWithProtocol('dhcp');
+				//var dnsParam = wanIndex.getDynamicDnsWithProtocol('dhcp');     //邮件中注明去掉dns，但是没说保存时是否继续传参
 				var mtuVal = wanSetting.find('input[name="mtu"]').val();
 				common.localdata.setLoData(wanIndex.paramOperate.MTUNameWithProtocol[0], mtuVal);
-				paramArray.push({dns:dnsParam, mtu:("" == mtuVal ? null : mtuVal), clonemac:null});
+				//paramArray.push({dns:dnsParam, mtu:("" == mtuVal ? null : mtuVal), clonemac:null});
+				paramArray.push({mtu:("" == mtuVal ? null : mtuVal), clonemac:null});
 				break;
 			case 'setting_2'://保存拨号上网
 				paramArray.push('PPPoE');
 				var userName = $('#' + wanSetting.attr('id') + ' input[name="userName"]').val();
 				var password = $('#' + wanSetting.attr('id') + ' input[name="password"]').val();
 				if ("" == userName || "" == password) {alert('账号或密码不能为空');return;}
-				var dnsParam = wanIndex.getDynamicDnsWithProtocol('PPPoE');
+				//var dnsParam = wanIndex.getDynamicDnsWithProtocol('PPPoE');     //邮件中注明去掉dns，但是没说保存时是否继续传参
 				//var mtuVal = wanSetting.find('input[name="mtu"]').val();//设计稿原型里面没有MTU的值
 				common.localdata.setLoData(wanIndex.paramOperate.MTUNameWithProtocol[1], wanIndex.paramOperate.MTUInitVal[1]);//手动给一个false默认值
 				var modeStr = $('#connect_mode').find('h3').text();
@@ -207,7 +208,8 @@ var wanIndex = {
 					if (idletimeVal < 0) {alert('选择按需连接时，重播间隔时间必须大于0');return;};
 					break;
 				}
-				paramArray.push({username:userName,password:password,dns:dnsParam,mtu:null,mode:modeVal,idletime:idletimeVal});
+				//paramArray.push({username:userName,password:password,dns:dnsParam,mtu:null,mode:modeVal,idletime:idletimeVal});
+				paramArray.push({username:userName,password:password,mtu:null,mode:modeVal,idletime:idletimeVal});
 				break;
 			case 'setting_3'://保存静态ip
 				paramArray.push('static');

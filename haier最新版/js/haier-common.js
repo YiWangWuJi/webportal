@@ -12,6 +12,7 @@ document.write('<script type="text/javascript" src="js/common-rpc.js"></script>'
 *	@param str{String}
 */
 var common = {
+		homeC  : false,			//用来检测家长控制是否打开
 	/*
 	*	dom集合
 	*/
@@ -26,7 +27,14 @@ var common = {
 		slide  : "i.open",		//收缩箭头
 		infor  : ".infor",		//右边导航
 		device : ".cdevice",	//连接设备管理器
-		editun : ".editun"		//设备名称编辑
+		editun : ".wan_select",	//设备名称编辑
+		home   : ".home_but"	//家长设置打开
+	},
+	/*
+	 * interval集合
+	 */
+	intervalList : {
+		chartsInter : {},//路由状态--->图表动态interval
 	},
 	/*
 	*	页面加载完需要运行的方法不包括图片realy
@@ -61,7 +69,7 @@ var common = {
 		if(!value){ value = "正在加载中..."}
 		if($("#mask").length == 0){
 			var str = "<section id='mask'><aside><div class='spinner'><div class='spinner-container container1'><div class='circle1'></div><div class='circle2'></div><div class='circle3'></div><div class='circle4'></div></div><div class='spinner-container container2'><div class='circle1'></div><div class='circle2'></div><div class='circle3'></div><div class='circle4'></div></div><div class='spinner-container container3'><div class='circle1'></div><div class='circle2'></div><div class='circle3'></div><div class='circle4'></div></div></div><p>"+value+"</p></aside></section>";
-			$("body").append(str)
+			$("body").append(str);
 		}
 	},
 	/*
@@ -106,24 +114,31 @@ var common = {
 					getUrl("route-state.html");
 				break;
 				case 1 :
+					common.stopInterval();
 					getUrl("connecting-device.html");
 				break;
 				case 2 :
+					common.stopInterval();
 					getUrl("wan-setting.html");
 				break;
 				case 3 :
+					common.stopInterval();
 					getUrl("lan-setting.html");
 				break;
 				case 4 :
+					common.stopInterval();
 					getUrl("luyoubao.html");
 				break;
 				case 5 :
+					common.stopInterval();
 					getUrl("wifi-setting.html");
 				break;
 				case 6 :
+					common.stopInterval();
 					getUrl("system-setting.html");
 				break;
 				case 7 :
+					common.stopInterval();
 					getUrl("running-state.html");
 				break;
 			}
@@ -156,7 +171,7 @@ var common = {
 					$("#setting_"+$(this).index()).show();
 				}
 			});
-			$(common.el.radioc).on("click",function(){
+			$(".wan_select").on("click",common.el.radioc,function(){
 				$(this).toggleClass("selected");
 			});
 
@@ -169,13 +184,23 @@ var common = {
 				if(!$(this).hasClass("selected")){
 					$(common.el.device).find(" h2 > label").removeClass("selected");
 					$(this).addClass("selected");
-					$("li[id*=device_]").hide();
-					if($(this).index() == 1){
-						$("#device_"+$(this).index()+"0").show();
-						$("#device_"+$(this).index()+"1").show();
-					}
+					$("[id*=device_]").hide();
 					$("#device_"+$(this).index()).show();
 				}
+			});
+			//家长设置打开
+			$(common.el.editun).on("click",".home_but",function(){
+				common.homeC = true;
+				$(".home").animate({left:0},400,function(){
+					$(".coonent").hide();
+					$(".home").css("position","static");
+				});
+			});
+			//家长控制关闭
+			$(".home_icon").on("click",function(){
+				common.homeC = false;
+				$(".coonent").show();
+				$(".home").css("position","absolute").animate({left:"100%"},400);
 			});
 		},
 		/*
@@ -211,7 +236,8 @@ var common = {
 				};
 				$(this).toggleClass("open");
 				$(this).find("aside").slideToggle(100);
-			}).find("a").on("click",function(){
+			}).find("a").off().on("click",function(){
+				$(this).attr("id") == "need_con" ? $("#Link").show() : $("#Link").hide();
 				$(this).parent().parent().find("h3").html($(this).html()+"<icon></icon>");
 			});
 			$(window).on("click",function(){
@@ -241,22 +267,22 @@ var common = {
 		edvEdit : function(){
 			var name;//用来存设备名
 			//点击编辑按钮进入编辑状态
-			$(common.el.editun + " icon.edit").on("click",function(){
+			$(common.el.editun).on("click",".editun icon.edit",function(){
 				name = $(this).parent().find("input").val();
 				$(this).parent().find("input").addClass("edit").removeAttr("disabled");
 				$(this).parent().find("icon.edit").hide();
 				$(this).parent().find("icon.enter,icon.close,a").css("display","inline-block");
 			});
 			//点击红叉清空设备名
-			$(common.el.editun + " icon.close").on("click",function(){
+			$(common.el.editun).on("click",".editun icon.close",function(){
 				$(this).parent().find("input").val("");
 			});
 			//还原默认设备名
-			$(common.el.editun + " a").on("click",function(){
+			$(common.el.editun).on("click",".editun a",function(){
 				$(this).parent().find("input").val(name);
 			});
 			//点击确认修改设备名（如果为空白用默认名）
-			$(common.el.editun + " icon.enter").on("click",function(){
+			$(common.el.editun).on("click",".editun icon.enter",function(){
 				if(!$(this).parent().find("input").val()){
 					$(this).parent().find("input").val(name);
 				};
@@ -413,6 +439,19 @@ var common = {
 		}
 	},
 	/**
+	 * 停止interval
+	 */
+	stopInterval : function() {
+		common.isEmptyObject(common.intervalList.chartsInter) ? clearInterval(common.intervalList.chartsInter) : null;
+	},
+	/**
+	 * 判断空对象
+	 */
+	isEmptyObject : function(obj) {
+	    for(var n in obj){return false;}
+	    return true;
+	},
+	/**
 	 * 获取域名(没有加端口的获取，如果有需要，以后加上)
 	 */
 	getDomain : function() {
@@ -433,7 +472,7 @@ var common = {
 	 */
 	logout : function() {
 		common.localdata.setSiData('token','');//清空token
-		window.location.href = common.getDomain() + 'login.html';
+		window.location.href = '/login.html';
 		return;
 	}
 	

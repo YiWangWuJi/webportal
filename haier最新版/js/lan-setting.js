@@ -11,6 +11,7 @@ var lanIndex = {
 			 * 业务类型
 			 */
 			businessType : 'router',
+			businessWifiType : 'wifi',
 			/**
 			 * 方法集合
 			 */
@@ -18,7 +19,8 @@ var lanIndex = {
 				getIfaceBaseInfo : 'LAN.getIfaceBaseInfo',//获取lan口基本信息
 				getTrafficInfo : 'LAN.getTrafficInfo',//获取lan口实时流量信息
 				getConfigInfo : 'DHCP.getConfigInfo',//获取dhcp配置信息
-				setConfigInfo : 'DHCP.setConfigInfo'//设置dhcp配置信息
+				setConfigInfo : 'DHCP.setConfigInfo',//设置dhcp配置信息
+				setLanIpAddr : 'WIFI.setLanIpAddr'//设置网关ip
 			}
 		},
 		/**
@@ -127,6 +129,8 @@ var lanIndex = {
 			}
 			var ipLimit = ipEnd - ipStart;
 			var params = [$('input[name="default_gateway"]').val(), $('#ip_start').prev().text() + ipStart, ipLimit, parseInt($('input[name="leasetime"]').val()) ];
+			//保存lan
+			lanIndex.savelanSetting();
 			//保存
 			var url = rpcUrl + this.paramOperate.businessType + token;
 			var rpc = new jsonrpc.JsonRpc(url);
@@ -135,8 +139,40 @@ var lanIndex = {
 				console.log(data);
 				common.hideMask();
 			});
+		},
+		/**
+		 * 保存lan设置
+		 */
+		savelanSetting : function() {
+			var ip_A = $('input[name="ip_A"]').val();
+			var ip_B = $('input[name="ip_B"]').val();
+			var ip_C = $('input[name="ip_C"]').val();
+			var ip_D = $('input[name="ip_D"]').val();
+			if (!isNumber(ip_C) || parseInt(ip_C) < 0 || parseInt(ip_C) >= 255 || !isNumber(ip_A) || '192' != ip_A || !isNumber(ip_B) || '168' != ip_B || !isNumber(ip_D) || '1' != ip_D) {alert('ip地址不合法，只允许192.168.X.1的格式，X取值范围0~254');return;}
+			var ip = ip_A + ip_B + ip_C + ip_D;
+			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.setLanIpAddr, ip, function(data){
+				console.log(data);
+			});
+			
 		}
 		
+}
+/**
+ * 判断是否是数字 
+ * @param oNum
+ * @returns {Boolean}
+ */
+function isNumber(oNum) {
+	if(!oNum) return false;
+	var strP=/^\d+(\.\d+)?$/;
+	if (!strP.test(oNum)) return false;
+	try {
+		if (parseFloat(oNum)!=oNum) return false;
+	}
+	catch(ex) {
+		return false;
+	}
+	return true;
 }
 
 /**

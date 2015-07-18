@@ -10,7 +10,7 @@ input {  font-family: microsoft yahei; }
 header { overflow: hidden; max-width: 960px; margin: 20px auto 0; background: #303030; height: 60px; border-radius:10px 10px 0 0; }
 .logo { float: left; margin: 15px 0 0 20px; }
 .search { float: right; padding-right: 20px; }
-.search_box { position: relative; display: inline-block; margin: 16px 30px 0 0; width: 280px; height: 28px; background: #fff; border-radius: 5px; box-shadow: -1px 0 3px rgba(0,0,0,.3) inset; }
+.search_box {visibility:hidden; position: relative; display: inline-block; margin: 16px 30px 0 0; width: 280px; height: 28px; background: #fff; border-radius: 5px; box-shadow: -1px 0 3px rgba(0,0,0,.3) inset; }
 .search_box but { cursor: pointer; display: block; position: absolute; height: 28px; width: 28px; right: 5px; top: 0px; background: url(../images/search.png) center no-repeat; }
 .search input { padding: 0 30px 0 18px; width: 280px; height: 28px; }
 .search input::-webkit-input-placeholder,.search input::-moz-placeholder { color: #c8c5c5; }
@@ -37,7 +37,7 @@ content > article { overflow: hidden; width: 960px; background: #fff; margin: 0 
 .checkbox.selected i { left:2px; background: #ccc; }
 /*下拉列表*/
 .select_list section ,.login input{ position: relative; cursor: pointer; display: inline-block; min-width: 130px; height: 30px; padding:0 10px; border-radius: 5px; border: 1px solid #e0dfdf; }
-.login input { width: 100%; height: 40px;}
+.login input { width: 100%; height: 40px; cursor:text; }
 .select_list section.open { border-color: #00c8e0; border-radius: 5px 5px 0 0; }
 .select_list section h3 { padding-right: 10px; position: relative; font-size: 13px; color: #656565; line-height: 30px; }
 .select_list section h3 icon { position: absolute; right: 0px; top: 7px; display: block; width: 13px; height: 14px; background: url(../images/bg.png) -47px 0 no-repeat; }
@@ -78,12 +78,12 @@ nav li:nth-child(2):hover span,nav li:nth-child(2).now span,.routelist li:nth-ch
 nav li:nth-child(3):hover span,nav li:nth-child(3).now span,.routelist li:nth-child(3).now span { background-position: -57px -114px; }
 nav li:nth-child(4):hover span,nav li:nth-child(4).now span,.routelist li:nth-child(1).now span,.routelist li:nth-child(2).now span { background-position: -57px -171px; }
 nav li:nth-child(5):hover span,nav li:nth-child(5).now span { background-position: -57px -227px; }
-nav li:nth-child(6):hover span,nav li:nth-child(6).now span,.routelist li:nth-child(5).now span,.routelist li:nth-child(6) span { background-position: -57px -283px; }
+nav li:nth-child(6):hover span,nav li:nth-child(6).now span,.routelist li:nth-child(5).now span,.routelist li:nth-child(6).now span { background-position: -57px -283px; }
 nav li:nth-child(7):hover span,nav li:nth-child(7).now span { background-position: -57px -341px; }
 nav li:nth-child(8):hover span,nav li:nth-child(8).now span { background-position: -57px -399px; }
 nav li:nth-child(9):hover span,nav li:nth-child(9).now span { background-position: -57px -456px; }
 /*右侧信息部分*/
-.infor,.infor_box { width: 100%; }
+.infor,.infor_box { width: 100%; position: relative }
 .infor_box { padding: 20px 0; }
 .infor_box.cdevice label { cursor: pointer; margin-right: 40px; }
 .infor_box.cdevice label.selected { color: #00c8e0; }
@@ -161,6 +161,15 @@ footer p {text-align: center; padding-top: 60px; }
 .login aside ul li img { margin:0 auto; }
 .login p {line-height: 2; color:#fff; font-size: 12px; text-align: center; position: absolute; bottom:30px; width: 100%; }
 .login p a { margin:0 5px; color: #fff; text-decoration: underline; }
+/*家长控制*/
+.home_control li { display:block; }
+.home_control li label { width:auto!important; margin-right: 20px!important; }
+.home_control li span { width: 70px!important; }
+.time_select section { min-width:70px; }
+.time_select section aside { min-width:70px; }
+.time_select n { margin:0 5px; }
+.home { position:absolute; width:100%; left:0px; top:0px; background:#fff; left: 100%; }
+.home_icon { width:9px; height: 18px; background:url(../images/home.png) no-repeat;margin: 15px 20px 0 0; }
 .spinner {
   margin:0 auto;
   width: 20px;

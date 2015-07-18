@@ -20,6 +20,7 @@ var routeStateIndex = {
 			businessRouterType : 'router',
 			businessUpdateType : 'update',
 			businessWifiType : 'wifi',
+			businessDiskType : 'disk',
 			/**
 			 * 方法集合
 			 */
@@ -28,7 +29,10 @@ var routeStateIndex = {
 				getIfaceBaseInfo : 'WAN.getIfaceBaseInfo',//获取wan口基本信息
 				getWiFiInfo : 'WIFI.getWiFiInfo',//获取wifi配置信息
 				resetReboot : 'SYS.Reboot',//重启路由器
-				setMacName : 'WIFI.setMacName'//设置mac对应的名称
+				setMacName : 'WIFI.setMacName',//设置mac对应的名称
+				getAssocList : 'WIFI.getAssocList',//获取关联station信息
+				disk_stat : 'disk_stat'//磁盘信息
+					
 			}
 		},
 		/**
@@ -40,9 +44,15 @@ var routeStateIndex = {
 			for (var i = 0; i < this.paramOperate.wifiBand.length; i++) {
 				this.getWifiInfo(this.paramOperate.wifiBand[i]);
 			}
+			this.getAssocList();
+			this.getDiskInfo();
 			this.eventList.bindShowStateInfo();
 			this.eventList.bindResetRouter();
 			this.eventList.bindEnterClick();
+			this.eventList.bindWifiDeviceRefresh();
+			this.eventList.bindWifiDeviceSetting();
+			this.eventList.bindDiskRefresh();
+			this.eventList.bindDiskSetting();
 		},
 		/**
 		 * 事件绑定集合
@@ -77,8 +87,43 @@ var routeStateIndex = {
 			 * 绑定修改名称事件
 			 */
 			bindEnterClick : function() {
-				$('.enter').click(function(){
+				$('.wan_select').on('click', '.enter', function(){
+					console.log('修改名称ing');
 					routeStateIndex.editNameWithMacaddr(this);
+				});
+			},
+			/**
+			 * 绑定无线设备刷新按钮
+			 */
+			bindWifiDeviceRefresh : function() {
+				$('#wifiDeviceRefresh').click(function(){
+					routeStateIndex.getAssocList();
+				});
+			},
+			/**
+			 * 绑定无线设备设置按钮
+			 */
+			bindWifiDeviceSetting : function() {
+				$('#wifiDeviceSetting').click(function(){
+					common.functions.loadInfor(1);
+					common.functions.headerNow(1);
+				});
+			},
+			/**
+			 * 绑定外接USB设备设置按钮
+			 */
+			bindDiskSetting : function() {
+				$('#diskSetting').click(function(){
+					common.functions.loadInfor(1);
+					common.functions.headerNow(1);
+				});
+			},
+			/**
+			 * 绑定外接USB设备刷新按钮
+			 */
+			bindDiskRefresh : function() {
+				$('#diskRefresh').click(function(){
+					routeStateIndex.getDiskInfo();
 				});
 			}
 		},
@@ -142,8 +187,97 @@ var routeStateIndex = {
 				console.log(data);
 				common.hideMask();
 			});
+		},
+		/**
+		 * 获取关联Station信息列表
+		 */
+		getAssocList : function() {
+			common.showMask();
+			callRpc(rpcUrl + routeStateIndex.paramOperate.businessWifiType + token, routeStateIndex.paramOperate.method.getAssocList, null, routeStateIndex.assocListCallBack);
+		},
+		/**
+		 * 获取关联station信息回调
+		 */
+		assocListCallBack : function(data) {
+			if (data.length) {
+				var html = document.getElementById('online_device').innerHTML;
+				var onlineDevice = $('#device_0');
+				for (var i = 0; i < data.length; i++) {
+					addHtml(onlineDevice, html, data[i]);
+				}
+				common.hideMask();
+			}
+		},
+		/**
+		 * 获取磁盘或USB设备信息
+		 */
+		getDiskInfo : function() {
+			common.showMask();
+			callRpcNotId(rpcUrl + routeStateIndex.paramOperate.businessDiskType + token, routeStateIndex.paramOperate.method.disk_stat, null, routeStateIndex.diskInfoCallBack);
+		},
+		/**
+		 * 获取磁盘或USB设备信息回调
+		 */
+		diskInfoCallBack : function(data) {
+			console.log(data);
+			if (data.length) {
+				var html = document.getElementById('disk_device').innerHTML;
+				var diskDevice = $('#device_1');
+				for (var i = 0; i < data.length; i++) {
+					if (0 != data[i].type && 3 != data[i].type) {
+						addHtml(diskDevice, html, data[i]);
+					}
+				}
+			}
+			common.hideMask();
+		},
+		/**
+		 * 字节数转换为可读数据
+		 * @see kb 字节数
+		 */
+		convertBytesToReadBytes : function(kb) {
+			kb = kb / 1000;
+			var unitNum = 1000;//进位
+			var unitName = ['KB','MB','GB','TB'];
+			var readkb = '0.00' + unitName[0];
+			if (kb > 0) {
+				if (kb <= unitNum) {//KB
+					readkb = kb + unitName[0];
+				}else if (kb > 1000 && kb <= Math.pow(unitNum,2)) {//MB
+					readkb = (kb/unitNum).toFixed(2) + unitName[1];
+				}else if (kb > Math.pow(unitNum,2) && kb <= Math.pow(unitNum,3)) {//GB
+					readkb = (kb/(Math.pow(unitNum,2))).toFixed(2) + unitName[2];
+				}else if (kb > Math.pow(unitNum,3) && kb <= Math.pow(unitNum,4)) {//TB
+					readkb = (kb/(Math.pow(unitNum,3))).toFixed(2) + unitName[3];
+				}
+			}
+			return readkb;
 		}
 }
+
+
+/**
+ * 追加html
+ * @author renwei
+ * @param obj
+ * @param html
+ */
+var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm'); //i g m是指分别用于指定区分大小写的匹配、全局匹配和多行匹配。
+function addHtml(obj,html,data){
+	switch (obj.attr('id')) {
+	case 'device_0':
+		obj.html(html.replace(reg, function (node, key) { 
+			return { 'deviceName': data.host, 'band': (data.band=='2G'?'<icon class="wifi_2_4G"></icon>':'<icon class="wifi_5G"></icon>'), 'macaddr': data.mac}[key]; 
+		}));
+		break;
+	case 'device_1':
+		obj.html(html.replace(reg, function (node, key) { 
+			return { 'diskName': data.name, 'totalSize': routeStateIndex.convertBytesToReadBytes(data.total), 'useSize': routeStateIndex.convertBytesToReadBytes(data.used), 'diskType': (data.type == 1 ? '硬盘存储' : 'USB存储')}[key]; 
+		}));
+		break;
+	}
+}
+
 
 /**
  * dom加载完成即执行 
