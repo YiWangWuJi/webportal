@@ -135,6 +135,9 @@ jsonrpc.JsonRpc.prototype = {
 		var i, response, request;
 		for (i = 0; i < responses.length; i += 1) {
 			response = responses[i];
+			if(response.id == null) {
+				response.id = 0;
+			}
 			request = requests[response.id];
 			this._handleResponse(request, response);
 		}
@@ -169,6 +172,7 @@ jsonrpc.JsonRpc.prototype = {
 			ret.request.params.push(args.shift());
 		}
 
+
 		if (this._isFunction(args[0])) {
 			ret.success = args[0];
 			ret.scope = args[1];
@@ -194,15 +198,30 @@ jsonrpc.JsonRpc.prototype = {
 	},
 
 	_doJsonPost: function (url, data, callback) {
+		var tid;
+		var timeoutHandler = function(data) {
+			alert("服务器响应超时，请重新加载页面");
+			document.location.reload();
+		};
+
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.onreadystatechange = function () {
+			if (tid) {
+				clearTimeout(tid);
+			}
+
 			if (xhr.readyState !== 4) {
 				return;
 			}
 
 			var contentType = xhr.getResponseHeader('Content-Type');
+			if (xhr.status == 401) {
+				console.log(window.location.href);
+				common.logout();
+				return;
+			}
 
 			if (xhr.status !== 200) {
 				callback(false, 'Expected HTTP response "200 OK", found "' + xhr.status + ' ' + xhr.statusText + '"');
@@ -213,6 +232,7 @@ jsonrpc.JsonRpc.prototype = {
 			}
 		};
 		xhr.send(JSON.stringify(data));
+		tid = setTimeout(timeoutHandler, "50000"); //超时时间暂定50秒 
 	}
 };
 jsonrpc.Observable = function () {

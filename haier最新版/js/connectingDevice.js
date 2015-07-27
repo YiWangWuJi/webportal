@@ -29,13 +29,29 @@ var connectionDevice = {
 		 * 初始化加载
 		 */
 		init : function() {
+			this.maskShow = new maskCtrl(4, common.hideMask, common);
 			this.getAssocList();
+			this.getHistoryDevList();
 			this.getBlackList();
 			this.getDiskInfo();
 			this.eventList.bindButton();
 			this.eventList.bindOnlineAndBlackListRefreshButton();
 			this.eventList.bindEnterClick();
 			this.eventList.bindDiskRefresh();
+			this.eventList.bindAddTimeUnit();
+
+			var refreshFunc = function() {
+				if ($('#connecting_device').length == 0) {
+					clearInterval(refreshId);
+					return;
+				}
+				connectionDevice.getAssocList();
+				connectionDevice.getHistoryDevList();
+				connectionDevice.getBlackList();
+				connectionDevice.getDiskInfo();
+			};
+
+			var refreshId = setInterval(refreshFunc, 5000);
 		},
 		/**
 		 * 事件绑定集合
@@ -64,9 +80,10 @@ var connectionDevice = {
 			 */
 			bindOnlineAndBlackListRefreshButton : function() {
 				$('#online_black_button').click(function(){
-					common.showMask();
+					connectionDevice.maskShow = new maskCtrl(3, common.hideMask, common);
 					connectionDevice.getAssocList();                      //获取关联station
 					connectionDevice.getBlackList();                      //获取黑名单
+					connectionDevice.getHistoryDevList();                 //获取历史设备
 				});
 			},
 			/**
@@ -82,22 +99,39 @@ var connectionDevice = {
 			 */
 			bindDiskRefresh : function() {
 				$('#diskRefresh').click(function(){
+					connectionDevice.maskShow = new maskCtrl(1, common.hideMask, common);
 					connectionDevice.getDiskInfo();
 				});
+			},
+			/**
+			 * 绑定添加时间单元按钮
+			 */
+			bindAddTimeUnit : function() {
+				var count = $('#homeControl div').length + 1;
+				$('#add_timeunit').click(function(count){
+					connectionDevice.addTimeUnitCallBack(count);
+				});
 			}
+		},
+		/**
+		 * 添加时间单元信息回调
+		 */
+		addTimeUnitCallBack: function(count) {
+			var html = document.getElementById('parent_ctrl').innerHTML;
+			$('#homeControl').html($('#homeControl').html() + html);
+			$('#homeControl div:last').find('span:first').text('时间单元' + count);
 		},
 		/**
 		 * 获取关联Station信息列表
 		 */
 		getAssocList : function() {
-			common.showMask();
 			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getAssocList, null, this.assocListCallBack);
 		},
 		/**
 		 * 获取关联station信息回调
 		 */
 		assocListCallBack : function(data) {
-			console.log(data);
+			$('#device_0').html("");
 			if (data.length) {
 				var html = document.getElementById('online_device').innerHTML;
 				var onlineDevice = $('#device_0');
@@ -105,8 +139,13 @@ var connectionDevice = {
 				for (var i = 0; i < data.length; i++) {
 					addHtml(onlineDevice, html, data[i]);
 				}
-				common.hideMask();
+			} else { 
+				$('#online_count').text('(' + 0 + ')');
 			}
+			if ((connectionDevice.maskShow != null) && connectionDevice.maskShow)  {
+					connectionDevice.maskShow.decRef();      
+			}
+
 		},
 		/**
 		 * 获取mac访问黑名单
@@ -118,6 +157,7 @@ var connectionDevice = {
 		 * 获取mac访问黑名单回调
 		 */
 		blackListCallBack : function(data) {
+			$('#device_2').html("");
 			if (data.length) {
 				var html = document.getElementById('black_list').innerHTML;
 				var blackList = $('#device_2');
@@ -125,8 +165,14 @@ var connectionDevice = {
 				for (var i = 0; i < data.length; i++) {
 					addHtml(blackList, html, data[i]);
 				}
+			}else {
+				$('#black_count').text('(' + 0 + ')');
 			}
-			common.hideMask();
+
+			if ((connectionDevice.maskShow != null) && connectionDevice.maskShow)  {
+					connectionDevice.maskShow.decRef();      
+			}
+
 		},
 		/**
 		 * 增加mac访问黑名单
@@ -134,7 +180,8 @@ var connectionDevice = {
 		addBlackList : function(mac) {
 			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.addBlackList, mac, function(data){
 				if (data) {
-					connectionDevice.getAssocList(); 
+					connectionDevice.getAssocList();
+					connectionDevice.getBlackList();
 				}
 			});
 		},
@@ -143,37 +190,49 @@ var connectionDevice = {
 		 */
 		removeBlackList : function(mac) {
 			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.deleteBlackList, mac, function(data){
-				console.log(data);
+				//console.log(data);
+				connectionDevice.getAssocList();
+				connectionDevice.getBlackList();
 			});
 		},
 		/**
 		 * 获取历史设备数据
 		 */
 		getHistoryDevList : function() {
-			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getHistoryDevList, null, function(data){
-			});
+			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getHistoryDevList, null, this.historyDevListCallBack);
 		},
 		/**
 		 * 历史设备数据回调
 		 */
 		historyDevListCallBack : function(data) {
+			$('#device_1').html("");
 			if (data.length) {
-				//回显历史设备
-				
+				if (data.length) {
+					var html = document.getElementById('history_device').innerHTML;
+					var historyDevice = $('#device_1');
+					$('#history_count').text('(' + data.length + ')');
+					for (var i = 0; i < data.length; i++) {
+						addHtml(historyDevice, html, data[i]);
+					}
+				}
+			} else {
+				$('#history_count').text('(' + 0 + ')');
+			}
+			if ((connectionDevice.maskShow != null) && connectionDevice.maskShow)  {
+					connectionDevice.maskShow.decRef();      
 			}
 		},
 		/**
 		 * 获取磁盘或USB设备信息
 		 */
 		getDiskInfo : function() {
-			common.showMask();
 			callRpcNotId(rpcUrl + connectionDevice.paramOperate.businessDiskType + token, connectionDevice.paramOperate.method.disk_stat, null, connectionDevice.diskInfoCallBack);
 		},
 		/**
 		 * 获取磁盘或USB设备信息回调
 		 */
 		diskInfoCallBack : function(data) {
-			console.log(data);
+			$('#disk_list').html("");
 			if (data.length) {
 				var html = document.getElementById('disk_device').innerHTML;
 				var diskDevice = $('#disk_list');
@@ -183,7 +242,10 @@ var connectionDevice = {
 					}
 				}
 			}
-			common.hideMask();
+			
+			if ((connectionDevice.maskShow != null) && connectionDevice.maskShow)  {
+					connectionDevice.maskShow.decRef();      
+			}
 		},
 		/**
 		 * 字节数转换为可读数据
@@ -213,13 +275,13 @@ var connectionDevice = {
 		editNameWithMacaddr : function(obj) {
 			common.showMask('正在修改……');
 			var that = $(obj);
-			var macaddr = that.prev().val();
-			var newName = that.prev().prev().val();
-			
+			var newName = that.prev().val();
+			var reg_name=/[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}:[A-F\d]{2}/;
+			var macAddr = that.parent().next().text().match(reg_name);
 			var url = rpcUrl + connectionDevice.paramOperate.businessWifiType + token;
 			var rpc = new jsonrpc.JsonRpc(url);
 			var method = connectionDevice.paramOperate.method.setMacName;
-			rpc.call(method, macaddr, newName, function(data) {
+			rpc.call(method, macAddr[0], newName, function(data) {
 				console.log(data);
 				common.hideMask();
 			});
@@ -236,17 +298,22 @@ var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm'); //i g m是指分别用于指
 function addHtml(obj,html,data){
 	switch (obj.attr('id')) {
 	case 'device_0':
-		obj.html(html.replace(reg, function (node, key) { 
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
 			return { 'deviceName': data.host, 'ipaddr': data.ip, 'band': (data.band=='2G'?'<icon class="wifi_2_4G"></icon>':'<icon class="wifi_5G"></icon>'), 'macaddr': data.mac}[key]; 
 		}));
 		break;
+	case 'device_1':
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
+			return { 'deviceName': data.name, 'macaddr': data.mac}[key]; 
+		}));
+		break;
 	case 'device_2':
-		obj.html(html.replace(reg, function (node, key) { 
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
 			return { 'deviceName': data.host, 'macaddr': data.mac}[key]; 
 		}));
 		break;
 	case 'disk_list':
-		obj.html(html.replace(reg, function (node, key) { 
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
 			return { 'diskName': data.name, 'totalSize': connectionDevice.convertBytesToReadBytes(data.total), 'useSize': connectionDevice.convertBytesToReadBytes(data.used), 'diskType': (data.type == 1 ? '硬盘存储' : 'USB存储')}[key]; 
 		}));
 		break;

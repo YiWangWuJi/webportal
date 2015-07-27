@@ -17,7 +17,6 @@ var wanIndex = {
 			method : {
 				getWanConnectInfo : 'WAN.getConnectInfo',//获取wan连接信息method
 				setWanConnectInfo : 'WAN.setConnectInfo',//设置wan连接信息method
-				setOnDemandMode   : 'WAN.setOnDemandMode',//使能/关闭按需拨号模式
 				notifyIfaceCreatedInfo : 'WAN.notifyIfaceCreatedInfo',//wan口连接建立通知信息
 				notifyIfaceLostInfo : 'WAN.notifyIfaceLostInfo',//wan口连接失败通知信息
 				getIfaceBaseInfo : 'WAN.getIfaceBaseInfo',//获取wan口基本信息
@@ -43,6 +42,7 @@ var wanIndex = {
 		init : function() {
 			this.getWanConnectInfo();
 			this.eventList.bindSaveButton();
+			this.eventList.bindIpInput();
 		},
 		/**
 		 * 事件绑定集合
@@ -55,8 +55,33 @@ var wanIndex = {
 				$('.enterbut').click(function(){
 					wanIndex.saveWanConnectInfo(this);
 				});
+			},
+			
+			bindIpInput : function() {
+				$('#setting_3 .iptext input').keyup(function(){
+					wanIndex.checkIpInput(this);
+				});
 			}
 		},
+		/**
+		 * 检查IP地址输入
+		 */
+		checkIpInput(obj) {
+			if (obj.value.length == obj.maxLength) {
+				var ipSection = obj.value;
+				if ((ipSection < 0) || (ipSection > 255)) {
+					obj.value = "";
+					alert("错误的ip地址输入");
+					return;
+				}
+				var inputSet = $('#setting_3 .iptext input');
+				var index = inputSet.index(obj);
+				if ((index != -1) && (index != (inputSet.size() - 1))) {
+					(inputSet.get(index + 1)).focus();
+				}
+			}
+		},
+
 		/**
 		 * 获取wan连接信息
 		 */
@@ -80,25 +105,16 @@ var wanIndex = {
 			switch (data.protocol) {
 			case 'dhcp':
 				index = 1;
-//				var dynamicDnsArray = data.info.dns;
-//				if (null != dynamicDnsArray && dynamicDnsArray) {
-//					for (var i = 0; i < dynamicDnsArray.length; i++) {
-//						var dynamicDnsElementArray = dynamicDnsArray[i].split('.');
-//						for (var z = 0; z < dynamicDnsElementArray.length; z++) {
-//							$('#setting_' + index + ' input[id="dynamic' + i + '_dns' + z + '"]').val(dynamicDnsElementArray[z]);
-//						}
-//					}
-//				}
-				var localMTU = common.localdata.getLoData(wanIndex.paramOperate.MTUNameWithProtocol[0]);//获取本地存储的MTU
-				$('#setting_' + index + ' input[name="mtu"]').val((localMTU && localMTU > 0) ? localMTU : wanIndex.paramOperate.MTUInitVal[0]);//回显MTU
+				$('#setting_' + index + ' input[name="mtu"]').val(data.info.mtu);//回显MTU
 				//获取对应protocol为dhcp的wan口基本信息
 				wanIndex.getIfaceBaseInfo([{protocol:data.protocol}],function(returnData){
 					$('#dhcp_id').text(returnData.ipaddr);
 					$('#dhcp_gateway').text(returnData.gwaddr);
+					$('#dhcp_mask').text("255.255.255.0"); //--TODO wait 邦天`
 					common.hideMask();
 				});
 				break;
-			case 'PPPoE':
+			case 'pppoe':
 				index = 2;
 				$('#setting_' + index + ' input[name="userName"]').val(data.info.username);
 				$('#setting_' + index + ' input[name="password"]').val(data.info.password);
@@ -112,10 +128,13 @@ var wanIndex = {
 				case 'demand':
 					$('#connect_mode').find('h3').html($('#need_con').text() + '<icon></icon>');
 					$('input[name="idletime"]').val(data.info.idletime);
+					$("#idle_time").css('display','inline');
 					break;
 				}
-				var localMTU = common.localdata.getLoData(wanIndex.paramOperate.MTUNameWithProtocol[1]);//获取本地存储的MTU
-				localMTU ? $('#pppoe_mtu').removeClass('selected') : $('#pppoe_mtu').addClass('selected');//回显MTU
+				var mtu  = data.info.mtu;
+				console.log(mtu);
+				//TODO-- wait 邦天提供正确的接口
+				//mtu ? $('#pppoe_mtu').removeClass('selected') : $('#pppoe_mtu').addClass('selected');//回显MTU
 				//获取对应protocol为PPPoE的wan口基本信息
 				wanIndex.getIfaceBaseInfo([{protocol:data.protocol}],function(returnData){
 					common.hideMask();
@@ -130,21 +149,22 @@ var wanIndex = {
 				var netMaskInputArray = $('#netmask_li').find('input');
 				var gateWayInputArray = $('#gateway_li').find('input');
 				for (var i = 0; i < ipArray.length; i++) {
-					ipInputArray[i].val(ipArray[i]);
-					netMaskInputArray[i].val(netMaskArray[i]);
-					gateWayInputArray[i].val(gateWayArray[i]);
+					$(ipInputArray[i]).val(ipArray[i]);
+					$(netMaskInputArray[i]).val(netMaskArray[i]);
+					$(gateWayInputArray[i]).val(gateWayArray[i]);
 				}
-				var dynamicDnsArray = data.info.dns;
-				if (null != dynamicDnsArray && dynamicDnsArray) {
-					for (var i = 0; i < dynamicDnsArray.length; i++) {
+
+				var dynamicDnsArray = data.info.dns.split(' ');
+				for (i = 0; i < 2; i++) {
+					if (dynamicDnsArray[i]) {
 						var dynamicDnsElementArray = dynamicDnsArray[i].split('.');
 						for (var z = 0; z < dynamicDnsElementArray.length; z++) {
-							$('#setting_' + index + ' input[id="static' + i + '_dns' + z + '"]').val(dynamicDnsElementArray[z]);
+							$('#static' + i + '_dns' + z).val(dynamicDnsElementArray[z]);
 						}
 					}
 				}
-				var localMTU = common.localdata.getLoData(wanIndex.paramOperate.MTUNameWithProtocol[2]);//获取本地存储的MTU
-				$('#setting_' + index + ' input[name="mtu"]').val((localMTU && localMTU > 0) ? localMTU : wanIndex.paramOperate.MTUInitVal[0]);//回显MTU
+
+				$('#setting_' + index + ' input[name="mtu"]').val(data.info.mtu);//回显MTU
 				//获取对应protocol为static的wan口基本信息
 				wanIndex.getIfaceBaseInfo([{protocol:data.protocol}],function(returnData){
 					common.hideMask();
@@ -171,26 +191,23 @@ var wanIndex = {
 		 * 保存连接设置
 		 */
 		saveWanConnectInfo : function(obj) {
-			common.showMask();
+			common.showMask("正在保存设置");
 			var button = $(obj);
 			var wanSetting = button.parent().parent();
 			var paramArray = [];
 			switch (wanSetting.attr('id')) {
 			case 'setting_1'://保存dhcp
 				paramArray.push('dhcp');
-				//var dnsParam = wanIndex.getDynamicDnsWithProtocol('dhcp');     //邮件中注明去掉dns，但是没说保存时是否继续传参
 				var mtuVal = wanSetting.find('input[name="mtu"]').val();
-				common.localdata.setLoData(wanIndex.paramOperate.MTUNameWithProtocol[0], mtuVal);
-				//paramArray.push({dns:dnsParam, mtu:("" == mtuVal ? null : mtuVal), clonemac:null});
-				paramArray.push({mtu:("" == mtuVal ? null : mtuVal), clonemac:null});
+				paramArray.push({mtu:("" == mtuVal ? 1500 : parseInt(mtuVal))});
+				console.log(paramArray);
 				break;
 			case 'setting_2'://保存拨号上网
-				paramArray.push('PPPoE');
+				paramArray.push('pppoe');
 				var userName = $('#' + wanSetting.attr('id') + ' input[name="userName"]').val();
 				var password = $('#' + wanSetting.attr('id') + ' input[name="password"]').val();
 				if ("" == userName || "" == password) {alert('账号或密码不能为空');return;}
-				//var dnsParam = wanIndex.getDynamicDnsWithProtocol('PPPoE');     //邮件中注明去掉dns，但是没说保存时是否继续传参
-				//var mtuVal = wanSetting.find('input[name="mtu"]').val();//设计稿原型里面没有MTU的值
+				var mtuVal = $('#pppoe_mtu').hasClass('selected') ? false : true; //是否开启MTU协商
 				common.localdata.setLoData(wanIndex.paramOperate.MTUNameWithProtocol[1], wanIndex.paramOperate.MTUInitVal[1]);//手动给一个false默认值
 				var modeStr = $('#connect_mode').find('h3').text();
 				var modeVal = '';
@@ -208,8 +225,8 @@ var wanIndex = {
 					if (idletimeVal < 0) {alert('选择按需连接时，重播间隔时间必须大于0');return;};
 					break;
 				}
-				//paramArray.push({username:userName,password:password,dns:dnsParam,mtu:null,mode:modeVal,idletime:idletimeVal});
-				paramArray.push({username:userName,password:password,mtu:null,mode:modeVal,idletime:idletimeVal});
+				paramArray.push({username:userName, password:password, mtu:mtuVal, mode:modeVal});
+				//paramArray.push({username:userName, password:password, mtu:mtuVal, mode:modeVal, idletime:idletimeVal});
 				break;
 			case 'setting_3'://保存静态ip
 				paramArray.push('static');
@@ -220,9 +237,9 @@ var wanIndex = {
 				var netMaskInputArray = $('#netmask_li').find('input');
 				var gateWayInputArray = $('#gateway_li').find('input');
 				for (var i = 0; i < ipInputArray.length; i++) {
-					ipArray.push($(ipInputArray[i]).val());
-					netMaskArray.push($(netMaskInputArray[i]).val());
-					gateWayArray.push($(gateWayInputArray[i]).val());
+					ipArray.push($(ipInputArray[i]).val().trim());
+					netMaskArray.push($(netMaskInputArray[i]).val().trim());
+					gateWayArray.push($(gateWayInputArray[i]).val().trim());
 				}
 				var ipVal = ipArray.join('.');
 				var netMaskVal = netMaskArray.join('.');
@@ -230,20 +247,14 @@ var wanIndex = {
 				var dnsParam = wanIndex.getDynamicDnsWithProtocol('static');
 				var mtuVal = wanSetting.find('input[name="mtu"]').val();
 				common.localdata.setLoData(wanIndex.paramOperate.MTUNameWithProtocol[2], mtuVal);
-				paramArray.push({ip:ipVal,mask:netMaskVal,gw:gateWayVal,dns:dnsParam,mtu:("" == mtuVal ? null : mtuVal),clonemac:null});
+				paramArray.push({ip:ipVal,mask:netMaskVal,gw:gateWayVal,dns:dnsParam,mtu:("" == mtuVal ? 1500 : parseInt(mtuVal))});
 				break;
 			case 'setting_4'://无线桥接
 				break;
 			}
 			console.log(paramArray);
 			//保存(此接口一旦调用即出现跨域问题)
-//			callRpc(rpcUrl + this.paramOperate.businessType + token, this.paramOperate.method.setWanConnectInfo, paramArray, function(data){
-//				console.log(data);
-//			});
-			var url = rpcUrl + this.paramOperate.businessType + token;
-			var rpc = new jsonrpc.JsonRpc(url);
-			var method = this.paramOperate.method.setWanConnectInfo;
-			rpc.call(method, paramArray[0], paramArray[1], function(data) {
+			callRpc(rpcUrl + this.paramOperate.businessType + token, this.paramOperate.method.setWanConnectInfo, paramArray, function(data){
 				console.log(data);
 				common.hideMask();
 			});
@@ -256,34 +267,6 @@ var wanIndex = {
 			var dns1Array = [];
 			var dnsParam = [];
 			switch (protocol) {
-			case 'dhcp':
-				if (!$('#setting_1 manual_dns_icon').hasClass('selected')) {
-					$('#setting_1 input[id^="dynamic0"]').each(function(){
-						dns0Array.push($(this).val());
-					});
-					$('#setting_1 input[id^="dynamic1"]').each(function(){
-						dns1Array.push($(this).val());
-					});
-					dnsParam.push(dns0Array.join('.'));
-					dnsParam.push(dns1Array.join('.'));
-					dns0Array = null;
-					dns1Array = null;
-				}
-				break;
-			case 'PPPoE':
-				if (!$('#setting_2 manual_dns_icon').hasClass('selected')) {
-					$('#setting_2 input[id^="dynamic0"]').each(function(){
-						dns0Array.push($(this).val());
-					});
-					$('#setting_2 input[id^="dynamic1"]').each(function(){
-						dns1Array.push($(this).val());
-					});
-					dnsParam.push(dns0Array.join('.'));
-					dnsParam.push(dns1Array.join('.'));
-					dns0Array = null;
-					dns1Array = null;
-				}
-				break;
 			case 'static':
 				$('#setting_3 input[id^="static0"]').each(function(){
 					dns0Array.push($(this).val());

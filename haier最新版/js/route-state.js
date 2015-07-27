@@ -17,21 +17,22 @@ var routeStateIndex = {
 			 * 业务类型
 			 */
 			businessServiceType : 'service',
-			businessRouterType : 'router',
-			businessUpdateType : 'update',
-			businessWifiType : 'wifi',
-			businessDiskType : 'disk',
+			businessRouterType  : 'router',
+			businessUpdateType  : 'update',
+			businessWifiType    : 'wifi',
+			businessDiskType    : 'disk',
 			/**
 			 * 方法集合
 			 */
 			method : {
-				getTrafficInfo : 'WAN.getTrafficInfo',//获取wan口实时流量
+				getTrafficInfo   : 'WAN.getTrafficInfo',//获取wan口实时流量
 				getIfaceBaseInfo : 'WAN.getIfaceBaseInfo',//获取wan口基本信息
-				getWiFiInfo : 'WIFI.getWiFiInfo',//获取wifi配置信息
-				resetReboot : 'SYS.Reboot',//重启路由器
-				setMacName : 'WIFI.setMacName',//设置mac对应的名称
-				getAssocList : 'WIFI.getAssocList',//获取关联station信息
-				disk_stat : 'disk_stat'//磁盘信息
+				getWiFiInfo      : 'WIFI.getWiFiInfo',//获取wifi配置信息
+				resetReboot      : 'SYS.Reboot',//重启路由器
+				setMacName       : 'WIFI.setMacName',//设置mac对应的名称
+				getAssocList     : 'WIFI.getAssocList',//获取关联station信息
+				disk_stat        : 'disk_stat',//磁盘信息
+				getLanLinkInfo   : 'LAN.getLinkInfo'//获取Lan口连接信息
 					
 			}
 		},
@@ -40,12 +41,14 @@ var routeStateIndex = {
 		 */
 		init : function() {
 			chars.show();
+			this.maskShow = new maskCtrl(6, common.hideMask, common);
 			this.getIfaceBaseInfo();
 			for (var i = 0; i < this.paramOperate.wifiBand.length; i++) {
 				this.getWifiInfo(this.paramOperate.wifiBand[i]);
 			}
 			this.getAssocList();
 			this.getDiskInfo();
+			this.getLanLinkInfo();
 			this.eventList.bindShowStateInfo();
 			this.eventList.bindResetRouter();
 			this.eventList.bindEnterClick();
@@ -53,6 +56,17 @@ var routeStateIndex = {
 			this.eventList.bindWifiDeviceSetting();
 			this.eventList.bindDiskRefresh();
 			this.eventList.bindDiskSetting();
+			var refreshFunc = function() {
+				if ($('#route_state').length == 0) {
+					clearInterval(refreshId);
+					return;
+				}
+				routeStateIndex.getAssocList();
+				routeStateIndex.getDiskInfo();
+			};
+
+			var refreshId = setInterval(refreshFunc, 5000);
+				
 		},
 		/**
 		 * 事件绑定集合
@@ -97,6 +111,7 @@ var routeStateIndex = {
 			 */
 			bindWifiDeviceRefresh : function() {
 				$('#wifiDeviceRefresh').click(function(){
+					routeStateIndex.maskShow = new maskCtrl(1, common.hideMask, common);
 					routeStateIndex.getAssocList();
 				});
 			},
@@ -123,6 +138,7 @@ var routeStateIndex = {
 			 */
 			bindDiskRefresh : function() {
 				$('#diskRefresh').click(function(){
+					routeStateIndex.maskShow = new maskCtrl(1, common.hideMask, common);
 					routeStateIndex.getDiskInfo();
 				});
 			}
@@ -131,43 +147,68 @@ var routeStateIndex = {
 		 * 获取wan口基本信息
 		 */
 		getIfaceBaseInfo : function() {
-			callRpc(rpcUrl + this.paramOperate.businessRouterType + token, this.paramOperate.method.getIfaceBaseInfo, null, function(data){
-				var wanState = $('.routelist').children().eq(2);
-				if (data.connected) {
-					wanState.addClass('now');
-					wanState.find('p').text('WAN已连接');
-				}else {
-					wanState.removeClass('now');
-					wanState.find('p').text('WAN未连接');
-				}
-			});
+			callRpc(rpcUrl + this.paramOperate.businessRouterType + token, this.paramOperate.method.getIfaceBaseInfo, null, {
+					success: function(data) {
+						var wanState = $('.routelist').children().eq(2);
+						if (data.connected) {
+							wanState.addClass('now');
+							wanState.find('p').text('WAN已连接');
+						}else {
+							wanState.removeClass('now');
+							wanState.find('p').text('WAN未连接');
+						}
+						
+						if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+							routeStateIndex.maskShow.decRef();      
+						}
+					},
+					failure: function(data) {
+						console.log("RPC getIfaceBaseInfo Failed");
+						if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+							routeStateIndex.maskShow.decRef();      
+						} 
+					}
+
+				});
 		},
 		/**
 		 * 获取wifi配置信息
 		 */
 		getWifiInfo : function(band) {
-			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getWiFiInfo, band, function(data){
-				switch (band) {
-				case routeStateIndex.paramOperate.wifiBand[0]:
-					var _2GState = $('.routelist').children().eq(4);
-					if (data.enable) {
-						_2GState.addClass('now');
-						_2GState.find('p').text('2G-已开启');
-					}else {
-						_2GState.removeClass('now');
-						_2GState.find('p').text('2G-未开启');
+			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getWiFiInfo, band, {
+				success: function(data) {
+					switch (band) {
+					case routeStateIndex.paramOperate.wifiBand[0]:
+						var _2GState = $('.routelist').children().eq(4);
+						if (data.enable) {
+							_2GState.addClass('now');
+							_2GState.find('p').text('2G-已开启');
+						}else {
+							_2GState.removeClass('now');
+							_2GState.find('p').text('2G-未开启');
+						}
+						break;
+					case routeStateIndex.paramOperate.wifiBand[1]:
+						var _5GState = $('.routelist').children().eq(5);
+						if (data.enable) {
+							_5GState.addClass('now');
+							_5GState.find('p').text('5G-已开启');
+						}else {
+							_5GState.removeClass('now');
+							_5GState.find('p').text('5G-未开启');
+						}
+						break;
 					}
-					break;
-				case routeStateIndex.paramOperate.wifiBand[1]:
-					var _5GState = $('.routelist').children().eq(5);
-					if (data.enable) {
-						_5GState.addClass('now');
-						_5GState.find('p').text('5G-已开启');
-					}else {
-						_5GState.removeClass('now');
-						_5GState.find('p').text('5G-未开启');
-					}
-					break;
+					if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+						routeStateIndex.maskShow.decRef();      
+					} 
+				},
+
+				failure: function(data) {
+					console.log("RPC getWifiInfo Failed");
+					if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+						routeStateIndex.maskShow.decRef();      
+					} 
 				}
 			});
 		},
@@ -192,45 +233,119 @@ var routeStateIndex = {
 		 * 获取关联Station信息列表
 		 */
 		getAssocList : function() {
-			common.showMask();
-			callRpc(rpcUrl + routeStateIndex.paramOperate.businessWifiType + token, routeStateIndex.paramOperate.method.getAssocList, null, routeStateIndex.assocListCallBack);
+			callRpc(rpcUrl + routeStateIndex.paramOperate.businessWifiType + token, routeStateIndex.paramOperate.method.getAssocList, null, {
+					success: routeStateIndex.assocListCallBack,
+					failure: function(data) {
+						console.log("RPC getAssocList Failed");
+						if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+							routeStateIndex.maskShow.decRef();      
+						} 
+					}
+				});
 		},
 		/**
 		 * 获取关联station信息回调
 		 */
 		assocListCallBack : function(data) {
+			$('#device_0').html("");
 			if (data.length) {
 				var html = document.getElementById('online_device').innerHTML;
 				var onlineDevice = $('#device_0');
 				for (var i = 0; i < data.length; i++) {
 					addHtml(onlineDevice, html, data[i]);
 				}
-				common.hideMask();
 			}
+			if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow) {
+				routeStateIndex.maskShow.decRef();      
+			} 
 		},
 		/**
 		 * 获取磁盘或USB设备信息
 		 */
 		getDiskInfo : function() {
-			common.showMask();
-			callRpcNotId(rpcUrl + routeStateIndex.paramOperate.businessDiskType + token, routeStateIndex.paramOperate.method.disk_stat, null, routeStateIndex.diskInfoCallBack);
+			callRpc(rpcUrl + routeStateIndex.paramOperate.businessDiskType + token, routeStateIndex.paramOperate.method.disk_stat, null, {
+						success: routeStateIndex.diskInfoCallBack,
+						failure: function(data) {
+							console.log("RPC getDiskInfo Failed");
+							if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+								routeStateIndex.maskShow.decRef();      
+							} 
+						}
+					});
 		},
 		/**
 		 * 获取磁盘或USB设备信息回调
 		 */
 		diskInfoCallBack : function(data) {
-			console.log(data);
+			var usbShow = false;
+			var diskState = $('.routelist').children().eq(3);
+			$('#device_1').html("");
 			if (data.length) {
 				var html = document.getElementById('disk_device').innerHTML;
 				var diskDevice = $('#device_1');
 				for (var i = 0; i < data.length; i++) {
 					if (0 != data[i].type && 3 != data[i].type) {
 						addHtml(diskDevice, html, data[i]);
+						if(data[i].type == 2) { 
+							usbShow = true;
+						}
 					}
 				}
+			} 
+
+			if (usbShow) {
+				diskState.addClass('now');
+				diskState.find('p').text('USB已连接');
+			} else {
+				diskState.removeClass('now');
+				diskState.find('p').text('USB未连接');
 			}
-			common.hideMask();
+
+			if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow) {
+				routeStateIndex.maskShow.decRef();      
+			}
 		},
+
+		/**
+		 * 获取Lan口连接信息
+		 */
+		getLanLinkInfo: function() {
+			callRpc(rpcUrl + routeStateIndex.paramOperate.businessRouterType + token, routeStateIndex.paramOperate.method.getLanLinkInfo, null, {
+						success: function(data) {
+							var lan1State = $('.routelist').children().eq(0);
+							var lan2State = $('.routelist').children().eq(1);
+							if(data.lan1) { 
+								lan1State.addClass('now');
+								lan1State.find('p').text('LAN1已连接');
+							} else{
+								lan1State.removeClass('now');
+								lan1State.find('p').text('LAN1未连接');
+							};
+
+							if(data.lan2) { 
+								lan2State.addClass('now');
+								lan2State.find('p').text('LAN1已连接');
+							} else{
+								lan2State.removeClass('now');
+								lan2State.find('p').text('LAN1未连接');
+							};
+
+							if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+								routeStateIndex.maskShow.decRef();      
+							} 
+						},
+
+						failure: function(data) {
+							console.log("RPC getDiskInfo Failed");
+							if ((routeStateIndex.maskShow != null) && routeStateIndex.maskShow)  {
+								routeStateIndex.maskShow.decRef();      
+							} 
+						}
+					});
+
+
+		},   
+
 		/**
 		 * 字节数转换为可读数据
 		 * @see kb 字节数
@@ -266,12 +381,12 @@ var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm'); //i g m是指分别用于指
 function addHtml(obj,html,data){
 	switch (obj.attr('id')) {
 	case 'device_0':
-		obj.html(html.replace(reg, function (node, key) { 
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
 			return { 'deviceName': data.host, 'band': (data.band=='2G'?'<icon class="wifi_2_4G"></icon>':'<icon class="wifi_5G"></icon>'), 'macaddr': data.mac}[key]; 
 		}));
 		break;
 	case 'device_1':
-		obj.html(html.replace(reg, function (node, key) { 
+		obj.html(obj.html() + html.replace(reg, function (node, key) { 
 			return { 'diskName': data.name, 'totalSize': routeStateIndex.convertBytesToReadBytes(data.total), 'useSize': routeStateIndex.convertBytesToReadBytes(data.used), 'diskType': (data.type == 1 ? '硬盘存储' : 'USB存储')}[key]; 
 		}));
 		break;
@@ -285,3 +400,5 @@ function addHtml(obj,html,data){
 $(function(){
 	routeStateIndex.init();
 });
+
+

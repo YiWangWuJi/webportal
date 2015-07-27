@@ -2,12 +2,12 @@
 	<h2><icon class="lanicon"></icon>局域网（LAN）设置</h2>
 	<ul class="wan_select">
 		<li class="iptext" id="ip_li">
-			<span>IP地址</span>
+			<span>网关地址</span>
 			<section>
 				<input value="192" maxlength="3" type="text" name="ip_A" disabled="disabled">.
 				<input value="168" maxlength="3" type="text" name="ip_B" disabled="disabled">.
 				<input value="1"   maxlength="3" type="text" name="ip_C">.
-				<input value="2"   maxlength="3" type="text" name="ip_D" disabled="disabled">
+				<input value="1"   maxlength="3" type="text" name="ip_D" disabled="disabled">
 			</section>
 <!-- 			<icon></icon> -->
 		</li>
@@ -22,14 +22,14 @@
 <!-- 			<icon></icon> -->
 		</li>
 		<li class="select_list">
-			<span>IP地址开始段</span><em>192.168.18.</em><input value="0" type="number" id="ip_start">
+			<span>IP地址开始段</span><em value="">192.168.<span>68</span>.</em><input value="0" type="number" id="ip_start">
 		</li>
 		<li class="select_list">
-			<span>IP地址结束段</span>192.168.18.<input value="0" type="number" id="ip_end">
+			<span>IP地址结束段</span><em>192.168.<span>68</span>.</em><input value="0" type="number" id="ip_end">
 		</li>
 		<li class="check_list">
 			<span>DHCP服务器</span>
-			<label><icon class="checkbox"><i></i></icon><input type="checkbox"></label>
+			<label><icon class="checkbox" id="dhcps_enable"><i></i></icon><input type="checkbox"></label>
 		</li>
 		<li><button style="margin-top:60px;" class="enterbut">保存设置</button></li>
 	</ul>

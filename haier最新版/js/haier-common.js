@@ -171,8 +171,26 @@ var common = {
 					$("#setting_"+$(this).index()).show();
 				}
 			});
+
 			$(".wan_select").on("click",common.el.radioc,function(){
 				$(this).toggleClass("selected");
+				
+				if ($(this).attr('name') == 'everyday'){
+					if ($(this).hasClass('selected')) {
+						$(this).parent().parent().next().find('.radiocheck').addClass("selected");
+					}else {
+
+						$(this).parent().parent().next().find('.radiocheck').removeClass("selected");
+					}
+				}
+
+				if (($(this).attr('name') == 'monday')  || ($(this).attr('name') == 'tuesday') || ($(this).attr('name') == 'wednesday')
+				|| ($(this).attr('name') == 'thursday') || ($(this).attr('name') == 'friday')
+				|| ($(this).attr('name') == 'satday')   || ($(this).attr('name') == 'sunday')){
+					 ($(this).parent().parent().find('.selected').length == 7) ?
+						$(this).parent().parent().prev().find('.radiocheck').addClass("selected") :
+						$(this).parent().parent().prev().find('.radiocheck').removeClass("selected");
+				}
 			});
 
 		},
@@ -237,8 +255,28 @@ var common = {
 				$(this).toggleClass("open");
 				$(this).find("aside").slideToggle(100);
 			}).find("a").off().on("click",function(){
-				$(this).attr("id") == "need_con" ? $("#Link").show() : $("#Link").hide();
+				$(this).attr("id") == "need_con" ? $("#idle_time").css('display','inline') 
+						: $("#idle_time").css('display','none');
 				$(this).parent().parent().find("h3").html($(this).html()+"<icon></icon>");
+
+				var selValue = $(this).attr('value');
+				if (selValue != undefined) {
+					$(this).parent().parent().find("h3").attr("value", selValue);
+					if ((selValue == 'OPEN') || (selValue == 'WPAPSK') || (selValue == 'WPA2PSK')) {
+						var bandPattern = /[25G]+/
+						var band = $(this).parent().parent().attr("id");
+						var band = band.match(bandPattern);
+					
+						if (selValue == 'OPEN') {
+							$('#' + band + '_suanfa_li').hide();
+							$('#' + band + '_password_li').hide();
+						} else {
+							$('#' + band + '_suanfa_li').show();
+							$('#' + band + '_password_li').show();
+						}
+					}
+					
+				}
 			});
 			$(window).on("click",function(){
 				$(common.el.select).removeClass("open").find("aside").slideUp(100);
@@ -467,6 +505,14 @@ var common = {
 		if ((!token || '' == token || null == token) && window.location.href.indexOf('login.html') <= 0) {common.logout();return;}
 		return token;
 	},
+
+	/**
+	 * 获取rpcURL
+	 */
+	getRpcURL: function() {
+		return 'http://' + document.domain + '/api/v1/';
+	},
+
 	/**
 	 * 退出
 	 */
@@ -475,9 +521,29 @@ var common = {
 		window.location.href = '/login.html';
 		return;
 	}
-	
+
 
 };
+
+function maskCtrl(value, callBack, scope) {
+	this.ref      = value;
+	this.callBack = callBack;
+	this.scope    = scope;
+	this.scope.showMask();
+}
+
+maskCtrl.prototype = {
+	constructor : maskCtrl,
+	decRef      : function() {
+		if (this.ref == 0) {
+			return;
+		}
+		if (--this.ref == 0) {
+			this.callBack.call(this.scope);
+		}
+	}
+}
+
 /**
  * 本地存储MTU公共方法
  * @see data "connect类型:MTU值" (json数据)
@@ -504,7 +570,7 @@ $(window).on("popstate",function(){
 /**
  * 临时写死调用rpc的url(业务类型和token需要自己拼接)
  */
-var rpcUrl = 'http://192.168.68.2/api/v1/';
+var rpcUrl = common.getRpcURL();
 /**
  * 临时写死token
  */

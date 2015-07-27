@@ -22,16 +22,19 @@ var runningIndex = {
 			 * 方法集合
 			 */
 			method : {
-				getIfaceBaseInfo : 'WAN.getIfaceBaseInfo',//获取wan口基本信息
+				getIfaceBaseInfo    : 'WAN.getIfaceBaseInfo',//获取wan口基本信息
 				getLanIfaceBaseInfo : 'LAN.getIfaceBaseInfo',//获取lan口基本信息
-				getWiFiInfo : 'WIFI.getWiFiInfo',//获取wifi配置信息
-				getWiFiRadioInfo : 'WIFI.getWiFiRadioInfo'//获取wifi物理层信息
+				getWiFiInfo         : 'WIFI.getWiFiInfo',//获取wifi配置信息
+				getWiFiRadioInfo    : 'WIFI.getRadioInfo',//获取wifi物理层信息
+				getConfigInfo       : 'DHCP.getConfigInfo',//获取dhcp配置信息
+				getBSSID       	    : 'WIFI.getBSSID',//获取dhcp配置信息
 			}
 		},
 		/**
 		 * 初始化加载
 		 */
 		init : function() {
+			this.maskShow = new maskCtrl(9, common.hideMask, common);
 			this.getIfaceBaseInfo();
 			this.getLanConnectInfo();
 			for (var i = 0; i < this.paramOperate.wifiBand.length; i++) {
@@ -53,6 +56,7 @@ var runningIndex = {
 			 */
 			bindRefreshTongJi : function() {
 				$('#tongji_refresh').click(function(){
+					runningIndex.maskShow = new maskCtrl(1, common.hideMask, common);
 					runningIndex.getIfaceBaseInfo();
 				});
 			},
@@ -70,6 +74,7 @@ var runningIndex = {
 			 */
 			bindRefreshWanState : function() {
 				$('#wan-refresh').click(function(){
+					runningIndex.maskShow = new maskCtrl(1, common.hideMask, common);
 					runningIndex.getIfaceBaseInfo();
 				});
 			},
@@ -78,6 +83,7 @@ var runningIndex = {
 			 */
 			bindRefreshLanState : function() {
 				$('#lan-refresh').click(function(){
+					runningIndex.maskShow = new maskCtrl(2, common.hideMask, common);
 					runningIndex.getLanConnectInfo();
 				});
 			},
@@ -86,6 +92,7 @@ var runningIndex = {
 			 */
 			bindRefreshWifiState : function() {
 				$('#wifi-refresh').click(function(){
+					runningIndex.maskShow = new maskCtrl(6, common.hideMask, common);
 					for (var i = 0; i < runningIndex.paramOperate.wifiBand.length; i++) {
 						runningIndex.getWifiInfo(runningIndex.paramOperate.wifiBand[i]);
 					}
@@ -105,15 +112,17 @@ var runningIndex = {
 		 * 获取wan口基本信息
 		 */
 		getIfaceBaseInfo : function() {
-			common.showMask();
 			var params = ['ipaddr'];
 			callRpc(rpcUrl + this.paramOperate.businessRouterType + token, this.paramOperate.method.getIfaceBaseInfo, params, this.wanSimCallBack);
 		},
 		/**
 		 * wan口基本信息回调
 		 */
-		wanSimCallBack : function(data) {
-			runningIndex.echoWanSimInfo(data);
+		wanSimCallBack : function(data, maskCtrl) {
+			runningIndex.echoWanSimInfo(data, maskCtrl);
+			if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+				runningIndex.maskShow.decRef();      
+			}
 		},
 		/**
 		 * 回显wan口基本信息
@@ -124,6 +133,7 @@ var runningIndex = {
 			$('#txbytes').text(this.convertBytesToReadBytes(data.txbytes));//发送总字节数
 			$('#rxpacket').text(data.rxpacket);//接收总包数
 			$('#txpacket').text(data.txpacket);//发送总包数
+			$('#ipaddr').text(data.ipaddr);//ip地址
 			$('#gwaddr').text(data.gwaddr);//网关
 			$('#mtu').text(1500);//MTU(这里不知道应该是取数值的MTU还是去Boolean的MTU，wan-setting中有两种数值)
 			$('#protocol').text(data.protocol);//protocol
@@ -133,7 +143,6 @@ var runningIndex = {
 					$('#dns_' + i).text(data.dnsaddr[i]);
 				}
 			}
-			common.hideMask();
 		},
 		/**
 		 * 字节数转换为可读数据
@@ -160,7 +169,6 @@ var runningIndex = {
 		 * 获取lan连接信息
 		 */
 		getLanConnectInfo : function() {
-			common.showMask();
 			var params = ['ipaddr'];
 			callRpc(rpcUrl + this.paramOperate.businessRouterType + token, this.paramOperate.method.getLanIfaceBaseInfo, params, this.lanSimCallBack);
 		},
@@ -176,16 +184,26 @@ var runningIndex = {
 		 */
 		echoLanSimInfo : function(data) {
 			$('#lan_ip').text(data.ipaddr);//ip
-			$('#lan_time').text('0小时');//租赁时长（目前写死，没有在文档中找到此参数）
 			$('#lan_macaddr').text(data.macaddr);
 			$('#lan_dhcp_o').text('开启');//dhcp服务器是否开启（目前写死，没有在文档中找到此参数）
-			common.hideMask();
+
+			var params = ['defaultgateway','start','limit','leasetime'];
+			callRpc(rpcUrl + this.paramOperate.businessRouterType + token, this.paramOperate.method.getConfigInfo, params, function(data){
+				$('#lan_time').text(data.leasetime, '小时');//租赁时长
+				if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+					runningIndex.maskShow.decRef();      
+				}
+			});
+
+			
+			if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+				runningIndex.maskShow.decRef();      
+			}
 		},
 		/**
 		 * 获取wifi配置信息
 		 */
 		getWifiInfo : function(band) {
-			common.showMask();
 			callRpc(rpcUrl + this.paramOperate.businessWifiType + token, this.paramOperate.method.getWiFiInfo, band, this.wifiInfoCallBack, band);
 		},
 		/**
@@ -213,6 +231,10 @@ var runningIndex = {
 				runningIndex.getWiFiRadioInfo(runningIndex.paramOperate.wifiBand[1]);
 				break;
 				}
+			
+			if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+				runningIndex.maskShow.decRef();      
+			}
 		},
 		/**
 		 * 获取wifi物理层信息
@@ -238,6 +260,18 @@ var runningIndex = {
 				runningIndex.echoWifiRadioInfo(runningIndex.paramOperate.wifiBand[1], 'mode', data.mode, true);//回显mode
 				break;
 			}
+
+			callRpc(rpcUrl + runningIndex.paramOperate.businessWifiType + token, runningIndex.paramOperate.method.getBSSID, band, function(data,band) {
+				$('#' + band + '_macaddr').text(data.bssid);
+				if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+					runningIndex.maskShow.decRef();      
+				}
+			}, band);
+			
+			if ((runningIndex.maskShow != null) && runningIndex.maskShow)  {
+				runningIndex.maskShow.decRef();      
+			}
+			
 		},
 		/**
 		 * 回显wifi物理层信息
@@ -308,13 +342,13 @@ var runningIndex = {
 					break;
 				case 'htmode':
 					switch (paramVal) {
-					case '0':
+					case 0:
 						$('#2G_htmode').text('20Mhz');
 						break;
-					case '1':
+					case 1:
 						$('#2G_htmode').text('20/40Mhz');
 						break;
-					case '2':
+					case 2:
 						console.log('出现错误，无意义');
 						break;
 					}
@@ -376,13 +410,13 @@ var runningIndex = {
 					break;
 				case 'htmode':
 					switch (paramVal) {
-					case '0':
+					case 0:
 						$('#5G_htmode').text('20Mhz');
 						break;
-					case '1':
+					case 1:
 						$('#5G_htmode').text('20/40Mhz');
 						break;
-					case '2':
+					case 2:
 						$('#5G_htmode').text('20/40/80Mhz');
 						break;
 					}
@@ -436,7 +470,6 @@ var runningIndex = {
 				}
 				break;
 			}
-			common.hideMask();
 		}
 }
 

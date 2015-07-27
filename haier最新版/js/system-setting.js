@@ -3,7 +3,6 @@
  * @author renwei
  * 
  * @problem 没有在接口文档中找到获取密码的接口
- * @problem 获取版本信息接口调用即错误
  */
 var systemIndex = {
 		/**
@@ -13,16 +12,18 @@ var systemIndex = {
 			/**
 			 * 业务类型
 			 */
-			businessServiceType : 'service',
+			businessServiceType :'service',
 			businessRouterType : 'router',
 			businessUpdateType : 'update',
+			businessUserType   : 'user',
 			/**
 			 * 方法集合
 			 */
 			method : {
 				curversion : 'FIRMWARE.curversion',//获取版本信息
-				update : 'FIRMWARE.update',//固件升级
-				resetSys : 'SYS.Reset'//恢复出厂设置
+				update     : 'FIRMWARE.update',//固件升级
+				resetSys   : 'SYS.Reset',//恢复出厂设置
+				passwd     : 'passwd'//修改管理员密码
 			}
 		},
 		/**
@@ -32,6 +33,7 @@ var systemIndex = {
 			this.getSystemVersionInfo();
 			this.eventList.bindResetButton();
 			this.eventList.bindResetRouter();
+			this.eventList.bindSaveButton();
 		},
 		/**
 		 * 事件绑定集合
@@ -42,7 +44,7 @@ var systemIndex = {
 			 */
 			bindSaveButton : function() {
 				$('.enterbut').click(function(){
-					
+					systemIndex.checkPassWord();		
 				});
 			},
 			/**
@@ -70,7 +72,7 @@ var systemIndex = {
 		 * 获取system版本信息
 		 */
 		getSystemVersionInfo : function() {
-			callRpc(rpcUrl + this.paramOperate.businessUpdateType + token, this.paramOperate.method.curversion, null, this.systemVersionInfoCallBack);
+			callRpc(rpcUrl + this.paramOperate.businessUpdateType + token, this.paramOperate.method.curversion, [], this.systemVersionInfoCallBack);
 		},
 		/**
 		 * system获取版本信息回调
@@ -82,7 +84,8 @@ var systemIndex = {
 		 * 回显system版本信息
 		 */
 		echoSystemVersionInfo : function(data) {
-			$('#versionStr').val(data);
+			console.log(data.curversion);
+			$('#versionStr').text(data.curversion);
 		},
 		/**
 		 * 恢复出厂设置
@@ -96,6 +99,39 @@ var systemIndex = {
 				});
 				return;
 			}
+		},
+
+		/**
+		 * check 密码设置
+		 */
+		checkPassWord: function() {
+			var oldpasswd  = $('#old_passwd').val();
+			var newpasswd1 = $('#new_passwd1').val();
+			var newpasswd2 = $('#new_passwd2').val();
+
+			if((newpasswd1 == null) || (newpasswd2 == null) || (newpasswd1 == "") 
+			|| (newpasswd2 == "") || (oldpasswd == null) || (oldpasswd == "")) {
+				alert("请输入正确的密码");
+				return;
+			}
+
+			if(newpasswd1 != newpasswd2) {
+				alert("两次输入的新密码不一致");
+				return;
+			}
+
+			var callback = {	
+				success:function(data){
+					alert("修改密码成功");
+					return;
+				},
+				failure:function(data){
+					alert("原始密码不匹配");
+					return;
+				}
+			};
+
+			callRpc(rpcUrl + this.paramOperate.businessUserType + token, this.paramOperate.method.passwd, [newpasswd1, oldpasswd], callback);
 		}
 		
 }

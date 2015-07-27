@@ -1,7 +1,7 @@
 <section class="infor_box cdevice coonent">
-	<h2>
+	<h2 id="connecting_device">
 		<label class="selected"><icon class="wifiicon"></icon>在线设备<n id="online_count">（0）</n></label>
-		<label><icon class="whtielist"></icon>历史设备<n>（0）</n></label>
+		<label><icon class="whtielist"></icon>历史设备<n id="history_count">（0）</n></label>
 		<label><icon class="blacklist"></icon>黑名单<n id="black_count">（0）</n></label>
 		<span><i id="online_black_button" class="refresh"></i><i class="open"></i></span>
 	</h2>
@@ -19,13 +19,13 @@
 		</li>
 		<li id="device_1">
  			<!--<span></span>暂时无历史设备 -->
-			<dl class="dev_mod">
-				<dt><icon></icon></dt>
-				<dd>[deviceName]</dd>
-				<dd>MAC地址：[macaddr]</dd>
+			<dl class="dev_pc editun">
+<!--				<dt><icon></icon></dt> -->
+<!--				<dd>[deviceName]</dd> -->
+<!--				<dd>MAC地址：[macaddr]</dd> -->
+<!--			<button style="margin-left:200px; display:inline-block;margin-top:60px;" class="enterbut" name="yichu">加入黑名单</button> -->
+<!--			<button style="margin-left:40px; display:inline-block;margin-top:60px;" class="enterbut home_but">家长设置</button> -->
 			</dl>
-			<button style="margin-left:200px; display:inline-block;margin-top:60px;" class="enterbut" name="yichu">加入黑名单</button>
-			<button style="margin-left:40px; display:inline-block;margin-top:60px;" class="enterbut home_but">家长设置</button>
 		</li>
 		<li id="device_2">
  			<span></span>当前暂无黑名单
@@ -58,273 +58,28 @@
 		<label><icon class="whtielist"></icon>家长设置</label>
 		<span><i class="home_icon"></i></span>
 	</h2>
-	<ul class="wan_select cdevicelist">
-		<div id="homeControl" class="home_control">
-			<li class="select_list" style="display:block">
-				<span>时间单元1</span>
-				<section class="select">
-					<h3>允许上网<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">允许上网</a>
-						<a href="javascript:void(0);">禁止上网</a>
-					</aside>
-				</section>
-			</li>
-			<li class="select_list" style="display:block">
-				<span>日期</span>
-				<label><icon class="radiocheck"></icon><input name="link" type="radio">每天</label>
-			</li>
-			<li class="select_list" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">星期一</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期二</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期三</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期四</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期五</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期六</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期日</label>
-			</li>
-			<hr>
-			<li class="select_list" style="display:block">
-				<span>时间</span>
-				<label style="width:auto"><icon class="radiocheck"></icon><input name="link" type="radio">全天</label>
-			</li>
-			<li class="select_list time_select" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">从</label>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>到</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-			</li>
-			<hr class="line">
-			<li class="select_list" style="display:block">
-				<span>时间单元2</span>
-				<section class="select">
-					<h3>允许上网<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">允许上网</a>
-						<a href="javascript:void(0);">禁止上网</a>
-					</aside>
-				</section>
-			</li>
-			<li class="select_list" style="display:block">
-				<span>日期</span>
-				<label><icon class="radiocheck"></icon><input name="link" type="radio">每天</label>
-			</li>
-			<li class="select_list" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">星期一</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期二</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期三</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期四</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期五</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期六</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期日</label>
-			</li>
-			<hr>
-			<li class="select_list" style="display:block">
-				<span>时间</span>
-				<label style="width:auto"><icon class="radiocheck"></icon><input name="link" type="radio">全天</label>
-			</li>
-			<li class="select_list time_select" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">从</label>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>到</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-			</li>
-			<hr class="line">
-			<li class="select_list" style="display:block">
-				<span>时间单元3</span>
-				<section class="select">
-					<h3>允许上网<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">允许上网</a>
-						<a href="javascript:void(0);">禁止上网</a>
-					</aside>
-				</section>
-			</li>
-			<li class="select_list" style="display:block">
-				<span>日期</span>
-				<label><icon class="radiocheck"></icon><input name="link" type="radio">每天</label>
-			</li>
-			<li class="select_list" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">星期一</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期二</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期三</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期四</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期五</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期六</label>
-				<label><icon class="radiocheck"></icon><input type="radio">星期日</label>
-			</li>
-			<hr>
-			<li class="select_list" style="display:block">
-				<span>时间</span>
-				<label style="width:auto"><icon class="radiocheck"></icon><input name="link" type="radio">全天</label>
-			</li>
-			<li class="select_list time_select" style="display:block">
-				<span></span>
-				<label><icon class="radiocheck"></icon><input type="radio">从</label>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>到</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-				<n>:</n>
-				<section class="select">
-					<h3>00<icon></icon></h3>
-					<aside>
-						<a href="javascript:void(0);">00</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">02</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-						<a href="javascript:void(0);">01</a>
-					</aside>
-				</section>
-			</li>
-			<li style="display:block"><button style="margin-left:180px;display:inline-block;margin-top:30px;" class="enterbut">保存设置</button><button style="display:inline-block;margin-left:30px;margin-top:30px;" class="enterbut">添加时间设置</button></li>
-		</div>
+	<ul class="wan_select cdevicelist" id="homeControl">
 	</ul>
+	<li style="display:block"><button style="margin-left:180px;display:inline-block;margin-top:30px;" class="enterbut">保存设置</button><button style="display:inline-block;margin-left:30px;margin-top:30px;" class="enterbut" id="add_timeunit">添加时间设置</button></li>
 </section>
 <script type="text/html" id="online_device">
-<dl class="dev_pc editun">
+<dl class="dev_mod editun">
 	<dt><icon></icon></dt>
 	<dd><input disabled="disabled" value="[deviceName]" type="text"><icon class="enter"></icon><icon class="close"></icon><icon class="edit"></icon></dd>
+	<dd data-name="mac">MAC地址：[macaddr]</dd>
 	<dd>IP地址：[ipaddr]</dd>
 	<dd>连接方式：[band]</dd>
-	<dd data-name="mac">MAC地址：[macaddr]</dd>
+	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" >家长设置</button>
+	<button style="margin-left:500px; margin-top:10px;" class="enterbut" name="jiaru">加入黑名单</button>
+</dl>
+</script>
+<script type="text/html" id="history_device">
+<dl class="dev_mod editun">
+	<dt><icon></icon></dt>
+	<dd>设备名称:</dd>
+	<dd>[deviceName]</dd>
+	<dd>MAC地址:[macaddr]</dd>
+	<dd>[macaddr]</dd>
 	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" >家长设置</button>
 	<button style="margin-left:500px; margin-top:10px;" class="enterbut" name="jiaru">加入黑名单</button>
 </dl>
@@ -346,4 +101,46 @@
 	<dd>已用容量：[useSize]</dd>
 </dl>
 </script>
+<script type="text/html" id="parent_ctrl">
+<div name="timeUnit" class="home_control">
+	<hr class="line">
+	<li class="select_list" style="display:block">
+		<span></span>
+		<section class="select">
+		<h3>禁止上网<icon></icon></h3>
+		<aside>
+			<a href="javascript:void(0);">禁止上网</a>
+		</aside>
+	</li>
+	<li class="select_list" style="display:block">
+		<span>日期</span>
+		<label><icon class="radiocheck" name="everyday"></icon><input name="link" type="radio">每天</label>
+	</li>
+	<li class="select_list" style="display:block">
+		<span></span>
+		<label><icon class="radiocheck" name="monday"   ></icon><input type="radio">星期一</label>
+		<label><icon class="radiocheck" name="tuesday"  ></icon><input type="radio">星期二</label>
+		<label><icon class="radiocheck" name="wednesday"></icon><input type="radio">星期三</label>
+		<label><icon class="radiocheck" name="thursday" ></icon><input type="radio">星期四</label>
+		<label><icon class="radiocheck" name="friday"   ></icon><input type="radio">星期五</label>
+		<label><icon class="radiocheck" name="satday"   ></icon><input type="radio">星期六</label>
+		<label><icon class="radiocheck" name="sunday"   ></icon><input type="radio">星期日</label>
+	</li>
+	<hr>
+	<li class="select_list" style="display:block">
+		<span>时间</span>
+		<label style="width:auto"><icon class="radiocheck"></icon><input name="link" type="radio">全天</label>
+	</li>
+	<li class="select_list time_select" style="display:block">
+		<input value="00" type="number" name="hours">
+		<n>:</n>
+		<input value="00" type="number" name="minutes">
+		<n>到</n>
+		<input value="00" type="number" name="hours">
+		<n>:</n>
+		<input value="00" type="number" name="minutes">
+	</li>
+</div>
+</script>
+
 <script src="js/connectingDevice.js"></script>

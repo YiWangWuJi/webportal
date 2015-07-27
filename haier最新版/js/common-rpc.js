@@ -9,22 +9,57 @@ var exceptionMsg = 'program appear exception!';
  * @see method 方法名需要完整的"业务.操作"
  * @see params 参数为数组
  * @see callBack 回调方法
- * @see optionalParam 可选参数，无实际意义，若存在则随回调方法 
+ * @see optionalParam 可选参数
  */
-var callRpc = function(url,method,params,callBack,optionalParam) {
+var callRpc = function(url,method,params,callBack, optionalParam) {
+	var _isArray = function (v) {
+		return Object.prototype.toString.apply(v) === '[object Array]';
+	};
+	var _isFunction = function (v) {
+		return Object.prototype.toString.apply(v) === '[object Function]';
+	};
+
+	var args = [];
+	var i;
+
 	var rpc = new jsonrpc.JsonRpc(url);
 	var result;
-	if (null != params && params) {
-		rpc.call(method, params, function(data) {
-			callFun(callBack,data,optionalParam);
-			return;
-		});
-	}else {
-		rpc.call(method, function(data) {
-			callFun(callBack,data,optionalParam);
-			return;
-		});
+	
+	args.push(method);
+	if ((params != null) && params) {
+		if (_isArray(params) == true) {
+			for (i = 0; i < params.length; i++) {
+				args.push(params[i]);	
+			}
+		} else {
+			args.push(params);
+		}
 	}
+	
+	if ((optionalParam == null) || (!optionalParam)) { 
+		args.push(callBack);
+	} else{
+		if (_isFunction(callBack) == true) {
+			args.push(function(data) {
+				callFun(callBack,data,optionalParam);
+                       		return;
+			}
+			);
+		} else {
+			callBack.success = function(data){
+				callFun(callBack.success,data,optionalParam);
+				return;
+			};
+
+			callBack.failure = function(data){
+				callFun(callBack.failure,data,optionalParam);
+				return;
+			};
+
+			args.push(callBack);
+		}
+	}
+	rpc.call.apply(rpc, args);
 }
 
 
