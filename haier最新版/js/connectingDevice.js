@@ -38,7 +38,7 @@ var connectionDevice = {
 			this.eventList.bindOnlineAndBlackListRefreshButton();
 			this.eventList.bindEnterClick();
 			this.eventList.bindDiskRefresh();
-			this.eventList.bindAddTimeUnit();
+			//this.eventList.bindAddTimeUnit();
 
 			var refreshFunc = function() {
 				if ($('#connecting_device').length == 0) {
@@ -107,19 +107,16 @@ var connectionDevice = {
 			 * 绑定添加时间单元按钮
 			 */
 			bindAddTimeUnit : function() {
-				var count = $('#homeControl div').length + 1;
-				$('#add_timeunit').click(function(count){
-					connectionDevice.addTimeUnitCallBack(count);
+				$('.infor').off().on('click', '.addtimeunit', function(count){
+					var mac      = $(this).parent().parent().attr("name");
+					//console.log(mac);
+					var unitList = $(this).parent().prev();
+					var count    = unitList.find('div').length; 
+					var html     = document.getElementById('parent_ctrl').innerHTML;
+					unitList.html(unitList.html() + html);
+					unitList.find('div:last span:first').text('时间单元' + count);
 				});
 			}
-		},
-		/**
-		 * 添加时间单元信息回调
-		 */
-		addTimeUnitCallBack: function(count) {
-			var html = document.getElementById('parent_ctrl').innerHTML;
-			$('#homeControl').html($('#homeControl').html() + html);
-			$('#homeControl div:last').find('span:first').text('时间单元' + count);
 		},
 		/**
 		 * 获取关联Station信息列表

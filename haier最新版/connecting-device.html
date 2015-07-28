@@ -53,15 +53,17 @@
 		</li>
 	</ul>
 </section>
-<section class="infor_box cdevice home">
+<script type="text/html" id="homectrl_device">
+<section class="infor_box cdevice home" name="[macaddr]">
 	<h2>
 		<label><icon class="whtielist"></icon>家长设置</label>
 		<span><i class="home_icon"></i></span>
 	</h2>
-	<ul class="wan_select cdevicelist" id="homeControl">
+	<ul class="wan_select cdevicelist">
 	</ul>
-	<li style="display:block"><button style="margin-left:180px;display:inline-block;margin-top:30px;" class="enterbut">保存设置</button><button style="display:inline-block;margin-left:30px;margin-top:30px;" class="enterbut" id="add_timeunit">添加时间设置</button></li>
+	<li style="display:block"><button style="margin-left:180px;display:inline-block;margin-top:30px;" class="enterbut savetimeunit">保存设置</button><button style="display:inline-block;margin-left:30px;margin-top:30px;" class="enterbut addtimeunit">添加时间设置</button></li>
 </section>
+</script>
 <script type="text/html" id="online_device">
 <dl class="dev_mod editun">
 	<dt><icon></icon></dt>
@@ -69,7 +71,7 @@
 	<dd data-name="mac">MAC地址：[macaddr]</dd>
 	<dd>IP地址：[ipaddr]</dd>
 	<dd>连接方式：[band]</dd>
-	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" >家长设置</button>
+	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" name="[macaddr]">家长设置</button>
 	<button style="margin-left:500px; margin-top:10px;" class="enterbut" name="jiaru">加入黑名单</button>
 </dl>
 </script>
@@ -80,7 +82,7 @@
 	<dd>[deviceName]</dd>
 	<dd>MAC地址:[macaddr]</dd>
 	<dd>[macaddr]</dd>
-	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" >家长设置</button>
+	<button style="margin-left:500px; margin-top:-80px;" class="enterbut home_but" name="[macaddr]">家长设置</button>
 	<button style="margin-left:500px; margin-top:10px;" class="enterbut" name="jiaru">加入黑名单</button>
 </dl>
 </script>
