@@ -131,16 +131,33 @@
 	<hr>
 	<li class="select_list" style="display:block">
 		<span>时间</span>
-		<label style="width:auto"><icon class="radiocheck"></icon><input name="link" type="radio">全天</label>
+		<label style="width:auto"><icon class="radiocheck" name="wholeday"></icon><input name="link" type="radio">全天</label>
 	</li>
 	<li class="select_list time_select" style="display:block">
-		<input value="00" type="number" name="hours">
+		<span>从</span>
+		<div> 
+      			<input type="text" value="00" disabled=true/>
+      			<icon class="up hours"></icon>
+      			<icon class="down hours"></icon>
+    		</div>
 		<n>:</n>
-		<input value="00" type="number" name="minutes">
+		<div> 
+      			<input type="text" value="00" disabled=true/>
+      			<icon class="up minutes"></icon>
+      			<icon class="down minutes"></icon>
+    		</div>
 		<n>到</n>
-		<input value="00" type="number" name="hours">
+		<div> 
+      			<input type="text" value="00" disabled=true/>
+      			<icon class="up hours"></icon>
+      			<icon class="down hours"></icon>
+    		</div>
 		<n>:</n>
-		<input value="00" type="number" name="minutes">
+		<div> 
+      			<input type="text" value="00" disabled=true/>
+      			<icon class="up minutes"></icon>
+      			<icon class="down minutes"></icon>
+    		</div>
 	</li>
 </div>
 </script>

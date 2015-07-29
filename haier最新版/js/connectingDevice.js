@@ -38,7 +38,7 @@ var connectionDevice = {
 			this.eventList.bindOnlineAndBlackListRefreshButton();
 			this.eventList.bindEnterClick();
 			this.eventList.bindDiskRefresh();
-			//this.eventList.bindAddTimeUnit();
+			this.eventList.bindOpenHomeCtrl();
 
 			var refreshFunc = function() {
 				if ($('#connecting_device').length == 0) {
@@ -104,19 +104,145 @@ var connectionDevice = {
 				});
 			},
 			/**
-			 * 绑定添加时间单元按钮
+			 * 绑定家长设置打开按钮
 			 */
-			bindAddTimeUnit : function() {
-				$('.infor').off().on('click', '.addtimeunit', function(count){
-					var mac      = $(this).parent().parent().attr("name");
-					//console.log(mac);
-					var unitList = $(this).parent().prev();
-					var count    = unitList.find('div').length; 
-					var html     = document.getElementById('parent_ctrl').innerHTML;
-					unitList.html(unitList.html() + html);
-					unitList.find('div:last span:first').text('时间单元' + count);
+			bindOpenHomeCtrl: function() {
+				$('.wan_select').on("click",".home_but",function(){
+					var mac  = $(this).attr("name");
+					if($('.home[name="' + mac + '"]').length == 0) {	
+						var reg  = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
+						var html = document.getElementById("homectrl_device").innerHTML;
+
+						html = html.replace(reg, function(node, key) { 
+							return {"macaddr":mac}[key];
+						});
+						$(".infor").append(html);
+
+						//添加时间单元添加按钮事件
+						$('.home[name="' + mac + '"]').on('click', '.addtimeunit', function(){
+							var mac      = $(this).parent().parent().attr("name");
+							var unitList = $(this).parent().prev();
+							var count    = unitList.find('> div').length;
+							var html     = document.getElementById('parent_ctrl').innerHTML;
+							unitList.html(unitList.html() + html);
+							unitList.find('> div:last span:first').text('时间单元' + (count + 1));
+
+							unitList.find('> div').find('.radiocheck').off().on("click",function(){
+								$(this).toggleClass("selected");
+								
+								if ($(this).attr('name') == 'everyday'){
+									if ($(this).hasClass('selected')) {
+										$(this).parent().parent().next().find('.radiocheck').addClass("selected");
+									}else {
+
+										$(this).parent().parent().next().find('.radiocheck').removeClass("selected");
+									}
+								}
+
+								if (($(this).attr('name') == 'monday')  || ($(this).attr('name') == 'tuesday') 
+								|| ($(this).attr('name') == 'wednesday')|| ($(this).attr('name') == 'thursday') 
+								|| ($(this).attr('name') == 'friday')   || ($(this).attr('name') == 'satday')   
+								|| ($(this).attr('name') == 'sunday')){
+									 ($(this).parent().parent().find('.selected').length == 7) ?
+										$(this).parent().parent().prev().find('.radiocheck').addClass("selected") :
+										$(this).parent().parent().prev().find('.radiocheck').removeClass("selected");
+								}
+
+								if ($(this).attr('name') == 'wholeday'){
+									if ($(this).hasClass('selected')) {
+										$(this).parent().parent().next().find('input').css('color','#e0dfdf');
+									}else {
+										$(this).parent().parent().next().find('input').css('color','#656565');
+									}
+								}
+
+							});
+
+							unitList.find('> div').find('.up').off().on("click",function(){
+								var tval = parseInt($(this).prev().val()) + 1;
+								if ($(this).hasClass('hours')) {
+									tval = (tval == 24) ? 0:tval;
+								}else {
+									tval = (tval == 60) ? 0:tval;
+								}
+
+								if(tval < 10) {
+									tval = '0' + tval.toString();
+								}else{
+									tval = tval.toString();
+								}
+								$(this).prev().val(tval);
+								$(this).prev().attr('value',tval);
+							});
+
+							unitList.find('> div').find('.down').off().on("click",function(){
+								var tval = parseInt($(this).prev().prev().val()) - 1;
+								if ($(this).hasClass('hours')) {
+									tval = (tval < 0) ? 23:tval;
+								}else {
+									tval = (tval < 0) ? 59:tval;
+								}
+
+								if(tval < 10) {
+									tval = '0' + tval.toString();
+								}else{
+									tval = tval.toString();
+								}
+								$(this).prev().prev().val(tval);
+								$(this).prev().prev().attr('value',tval);
+							});
+
+
+						});
+
+						//家长控制关闭
+						$('.home[name="' + mac + '"]').on("click", '.home_icon', function(){
+							var mac = $(this).parent().parent().parent().attr("name");
+							common.homeC = false;
+							$(".coonent").show();
+							$('.home[name="' + mac + '"]').css("position","absolute").animate({left:"100%"},400);
+						}); 
+					}
+
+					common.homeC = true;
+					$('.home[name="' + mac + '"]').animate({left:0},400,function(){
+						$(".coonent").hide();
+						$('.home[name="' + mac + '"]').css("position","static");
+					}); 
+
+					
+					$('.home[name="' + mac + '"]').on('click', '.savetimeunit', function(){
+						var timeUnits = []; var timeUnit; var tdays = [];
+						var length = $(this).parent().prev().find('> div').length;
+						var tmac   = $('.home[name="' + mac + '"]').attr('name');
+
+						for (var i = 0; i < length; i++) {
+							timeUnit = new Object();
+							var unit = $(this).parent().prev().find('> div')[i];
+							var days = $(unit).find(':nth-child(4)').find('.radiocheck');
+							for (var j = 0; j < days.length; j++) {
+								if ($(days[j]).hasClass('selected')) {
+									tdays.push(j + 1);   	
+								}
+							}
+
+							if ($(unit).find('.radiocheck[name=wholeday]').hasClass('selected')){
+								var startTime = '00:00:00';
+								var endTime   = '23:59:00';
+							}else {
+								var times = $(unit).find('div > input');
+								var startTime = $(times[0]).val() + ':' + $(times[1]).val() + ':' + '00';
+								var endTime   = $(times[2]).val() + ':' + $(times[3]).val() + ':' + '00';
+							}
+							console.log(startTime, endTime);
+						}
+					});
+
 				});
 			}
+
+
+
 		},
 		/**
 		 * 获取关联Station信息列表

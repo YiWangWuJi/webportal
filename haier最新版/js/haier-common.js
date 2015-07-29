@@ -12,7 +12,6 @@ document.write('<script type="text/javascript" src="js/common-rpc.js"></script>'
 *	@param str{String}
 */
 var common = {
-		homeC  : false,			//用来检测家长控制是否打开
 	/*
 	*	dom集合
 	*/
@@ -186,70 +185,6 @@ var common = {
 					$("[id*=device_]").hide();
 					$("#device_"+$(this).index()).show();
 				}
-			});
-			//家长设置打开
-			$(common.el.editun).on("click",".home_but",function(){
-				var mac  = $(this).attr("name");
-				if($('.home[name="' + mac + '"]').length == 0) {	
-					var reg  = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
-					var html = document.getElementById("homectrl_device").innerHTML;
-
-					html = html.replace(reg, function(node, key) { 
-						return {"macaddr":mac}[key];
-					});
-					$(".infor").append(html);
-
-					//添加时间单元按钮事件
-					$('.home[name="' + mac + '"]').on('click', '.addtimeunit', function(){
-						var mac      = $(this).parent().parent().attr("name");
-						var unitList = $(this).parent().prev();
-						var count    = unitList.find('div').length;
-						var html     = document.getElementById('parent_ctrl').innerHTML;
-						unitList.html(unitList.html() + html);
-						unitList.find('div:last span:first').text('时间单元' + (count + 1));
-
-						unitList.find('div:last').on("click",common.el.radioc,function(){
-							$(this).toggleClass("selected");
-							
-							if ($(this).attr('name') == 'everyday'){
-								if ($(this).hasClass('selected')) {
-									$(this).parent().parent().next().find('.radiocheck').addClass("selected");
-								}else {
-
-									$(this).parent().parent().next().find('.radiocheck').removeClass("selected");
-								}
-							}
-
-							if (($(this).attr('name') == 'monday')  || ($(this).attr('name') == 'tuesday') 
-							|| ($(this).attr('name') == 'wednesday')|| ($(this).attr('name') == 'thursday') 
-							|| ($(this).attr('name') == 'friday')   || ($(this).attr('name') == 'satday')   
-							|| ($(this).attr('name') == 'sunday')){
-								 ($(this).parent().parent().find('.selected').length == 7) ?
-									$(this).parent().parent().prev().find('.radiocheck').addClass("selected") :
-									$(this).parent().parent().prev().find('.radiocheck').removeClass("selected");
-							}
-						});
-
-
-
-
-					});
-
-					//家长控制关闭
-					$('.home[name="' + mac + '"]').on("click", '.home_icon', function(){
-						var mac = $(this).parent().parent().parent().attr("name");
-						common.homeC = false;
-						$(".coonent").show();
-						$('.home[name="' + mac + '"]').css("position","absolute").animate({left:"100%"},400);
-					}); 
-				}
-
-				common.homeC = true;
-				$('.home[name="' + mac + '"]').animate({left:0},400,function(){
-					$(".coonent").hide();
-					$('.home[name="' + mac + '"]').css("position","static");
-				}); 
-
 			});
 		},
 		/*
