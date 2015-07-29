@@ -46,13 +46,15 @@ var callRpc = function(url,method,params,callBack, optionalParam) {
 			}
 			);
 		} else {
+			var successFun = callBack.success;
+			var failureFun = callBack.failure;
 			callBack.success = function(data){
-				callFun(callBack.success,data,optionalParam);
+				callFun(successFun, data, optionalParam);
 				return;
 			};
 
 			callBack.failure = function(data){
-				callFun(callBack.failure,data,optionalParam);
+				callFun(failureFun, data, optionalParam);
 				return;
 			};
 

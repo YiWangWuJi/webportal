@@ -10,8 +10,9 @@ var connectionDevice = {
 			/**
 			 * 业务类型
 			 */
-			businessWifiType : 'wifi',
-			businessDiskType : 'disk',
+			businessWifiType    : 'wifi',
+			businessDiskType    : 'disk',
+			businessRouterType  : 'router',
 			/**
 			 * 方法集合
 			 */
@@ -23,6 +24,8 @@ var connectionDevice = {
 				getHistoryDevList : 'WIFI.getHistoryDevList',//获取历史设备
 				disk_stat : 'disk_stat',//磁盘信息
 				setMacName : 'WIFI.setMacName',//设置mac对应的名称
+				setHomeCtrl : 'QOS.setParentalControl',//设置家长设置信息
+				getHomeCtrl : 'QOS.getParentalControl',//获取家长设置信息
 			}
 		},
 		/**
@@ -126,73 +129,7 @@ var connectionDevice = {
 							var html     = document.getElementById('parent_ctrl').innerHTML;
 							unitList.html(unitList.html() + html);
 							unitList.find('> div:last span:first').text('时间单元' + (count + 1));
-
-							unitList.find('> div').find('.radiocheck').off().on("click",function(){
-								$(this).toggleClass("selected");
-								
-								if ($(this).attr('name') == 'everyday'){
-									if ($(this).hasClass('selected')) {
-										$(this).parent().parent().next().find('.radiocheck').addClass("selected");
-									}else {
-
-										$(this).parent().parent().next().find('.radiocheck').removeClass("selected");
-									}
-								}
-
-								if (($(this).attr('name') == 'monday')  || ($(this).attr('name') == 'tuesday') 
-								|| ($(this).attr('name') == 'wednesday')|| ($(this).attr('name') == 'thursday') 
-								|| ($(this).attr('name') == 'friday')   || ($(this).attr('name') == 'satday')   
-								|| ($(this).attr('name') == 'sunday')){
-									 ($(this).parent().parent().find('.selected').length == 7) ?
-										$(this).parent().parent().prev().find('.radiocheck').addClass("selected") :
-										$(this).parent().parent().prev().find('.radiocheck').removeClass("selected");
-								}
-
-								if ($(this).attr('name') == 'wholeday'){
-									if ($(this).hasClass('selected')) {
-										$(this).parent().parent().next().find('input').css('color','#e0dfdf');
-									}else {
-										$(this).parent().parent().next().find('input').css('color','#656565');
-									}
-								}
-
-							});
-
-							unitList.find('> div').find('.up').off().on("click",function(){
-								var tval = parseInt($(this).prev().val()) + 1;
-								if ($(this).hasClass('hours')) {
-									tval = (tval == 24) ? 0:tval;
-								}else {
-									tval = (tval == 60) ? 0:tval;
-								}
-
-								if(tval < 10) {
-									tval = '0' + tval.toString();
-								}else{
-									tval = tval.toString();
-								}
-								$(this).prev().val(tval);
-								$(this).prev().attr('value',tval);
-							});
-
-							unitList.find('> div').find('.down').off().on("click",function(){
-								var tval = parseInt($(this).prev().prev().val()) - 1;
-								if ($(this).hasClass('hours')) {
-									tval = (tval < 0) ? 23:tval;
-								}else {
-									tval = (tval < 0) ? 59:tval;
-								}
-
-								if(tval < 10) {
-									tval = '0' + tval.toString();
-								}else{
-									tval = tval.toString();
-								}
-								$(this).prev().prev().val(tval);
-								$(this).prev().prev().attr('value',tval);
-							});
-
-
+							connectionDevice.bindTimeUnitEvent(unitList);
 						});
 
 						//家长控制关闭
@@ -202,6 +139,74 @@ var connectionDevice = {
 							$(".coonent").show();
 							$('.home[name="' + mac + '"]').css("position","absolute").animate({left:"100%"},400);
 						}); 
+
+						$('.home[name="' + mac + '"]').on('click', '.savetimeunit', function(){
+							var timeUnits = [];
+							var length = $(this).parent().prev().find('> div').length;
+							var tmac   = $('.home[name="' + mac + '"]').attr('name');
+
+							for (var i = 0; i < length; i++) {
+								var timeUnit = new Object();
+								var tdays = new Array();
+								var unit = $(this).parent().prev().find('> div')[i];
+								var days = $(unit).find(':nth-child(4)').find('.radiocheck');
+								for (var j = 0; j < days.length; j++) {
+									if ($(days[j]).hasClass('selected')) {
+										tdays.push(j + 1);   	
+									}
+								}
+
+								var startTime;
+								var endTime;  
+								if ($(unit).find('.radiocheck[name=wholeday]').hasClass('selected')){
+									startTime = '00:00:00';
+									endTime   = '23:59:00';
+								}else {
+									var times = $(unit).find('div > input');
+									startTime = $(times[0]).val() + ':' + $(times[1]).val() + ':' + '00';
+									endTime   = $(times[2]).val() + ':' + $(times[3]).val() + ':' + '00';
+								}
+
+								if ((tdays.length != 0) && (startTime != endTime)){
+									timeUnit.macaddr  = tmac;
+									timeUnit.weekdays = tdays;
+									if ($(unit).find('.select > h3').hasClass('opentimeunit')){
+										timeUnit.enable = true;
+									}else{
+										timeUnit.enable = false;
+									}
+									timeUnit.starttime = startTime; 
+									timeUnit.endtime   = endTime; 
+									timeUnits.push(timeUnit); 
+								}
+							}
+
+							console.log(timeUnits);
+							common.showMask('正在配置家长控制信息……');
+							callRpc(rpcUrl + connectionDevice.paramOperate.businessRouterType + token, 
+								connectionDevice.paramOperate.method.setHomeCtrl, timeUnits, {
+									success: function(data) {
+										common.hideMask();
+									},
+									failure: function(data) {
+										common.hideMask();
+									}
+
+								});
+						});
+
+						common.showMask('正在更新家长控制信息……');
+						callRpc(rpcUrl + connectionDevice.paramOperate.businessRouterType + token, 
+								connectionDevice.paramOperate.method.getHomeCtrl, mac, {
+									success: function(data, mac) {
+										connectionDevice.echoHomeCtrlInfo(data, mac);
+										common.hideMask();
+									},
+									failure: function(data, mac) {
+										common.hideMask();
+									}
+
+						}, mac);
 					}
 
 					common.homeC = true;
@@ -209,41 +214,145 @@ var connectionDevice = {
 						$(".coonent").hide();
 						$('.home[name="' + mac + '"]').css("position","static");
 					}); 
-
-					
-					$('.home[name="' + mac + '"]').on('click', '.savetimeunit', function(){
-						var timeUnits = []; var timeUnit; var tdays = [];
-						var length = $(this).parent().prev().find('> div').length;
-						var tmac   = $('.home[name="' + mac + '"]').attr('name');
-
-						for (var i = 0; i < length; i++) {
-							timeUnit = new Object();
-							var unit = $(this).parent().prev().find('> div')[i];
-							var days = $(unit).find(':nth-child(4)').find('.radiocheck');
-							for (var j = 0; j < days.length; j++) {
-								if ($(days[j]).hasClass('selected')) {
-									tdays.push(j + 1);   	
-								}
-							}
-
-							if ($(unit).find('.radiocheck[name=wholeday]').hasClass('selected')){
-								var startTime = '00:00:00';
-								var endTime   = '23:59:00';
-							}else {
-								var times = $(unit).find('div > input');
-								var startTime = $(times[0]).val() + ':' + $(times[1]).val() + ':' + '00';
-								var endTime   = $(times[2]).val() + ':' + $(times[3]).val() + ':' + '00';
-							}
-							console.log(startTime, endTime);
-						}
-					});
-
 				});
 			}
 
 
 
 		},
+		/**
+		 * 回显家长控制信息
+		 */
+		echoHomeCtrlInfo: function(data, mac) {
+			var unitList = $('.home[name="' + mac + '"]').find('.wan_select');
+			var count    = unitList.find('> div').length;
+			var html     = document.getElementById('parent_ctrl').innerHTML;
+			console.log(data);
+			
+			for (var i = 0; i < data.length; i++) {
+				var dayselCount = 0;
+				var unitObj  = data[i];
+				unitList.html(unitList.html() + html);
+				unit = unitList.find('> div:last');
+				unit.find('span:first').text('时间单元' + (count + 1 + i));
+				var weekdays = unit.find('li:nth-child(4)').find('.radiocheck'); 
+				for (var j = 0; j < unitObj.weekdays.length; j++) {
+					var w = unitObj.weekdays[j]; 
+					$(weekdays[w - 1]).addClass("selected");
+					if (unitObj.weekdays[j]){
+						dayselCount ++; 
+					} 
+					if (dayselCount == 7){
+						unit.find('li:nth-child(3)').find('.radiocheck').addClass("selected"); 
+					}
+				}
+
+				if ((unitObj.starttime == '00:00:00') && (unitObj.endtime == '23:59:00')) {
+					unit.find('icon[name="wholeday"]').addClass("selected"); 
+					unit.find('input[type="text"]').css('color','#e0dfdf');
+				} 
+				$(unit.find('input[type="text"]')[0]).attr('value', unitObj.starttime.slice(0,2));
+				$(unit.find('input[type="text"]')[1]).attr('value', unitObj.starttime.slice(3,5));
+				$(unit.find('input[type="text"]')[2]).attr('value', unitObj.endtime.slice(0,2));
+				$(unit.find('input[type="text"]')[3]).attr('value', unitObj.endtime.slice(3,5));
+
+				connectionDevice.bindTimeUnitEvent(unitList);
+			}
+
+		},
+
+		bindTimeUnitEvent:function(unitList) {
+			unitList.find('> div').find('.radiocheck').off().on("click",function(){
+				$(this).toggleClass("selected");
+				
+				if ($(this).attr('name') == 'everyday'){
+					if ($(this).hasClass('selected')) {
+						$(this).parent().parent().next().find('.radiocheck').addClass("selected");
+					}else {
+
+						$(this).parent().parent().next().find('.radiocheck').removeClass("selected");
+					}
+				}
+
+				if (($(this).attr('name') == 'monday')  || ($(this).attr('name') == 'tuesday') 
+				|| ($(this).attr('name') == 'wednesday')|| ($(this).attr('name') == 'thursday') 
+				|| ($(this).attr('name') == 'friday')   || ($(this).attr('name') == 'satday')   
+				|| ($(this).attr('name') == 'sunday')){
+					 ($(this).parent().parent().find('.selected').length == 7) ?
+						$(this).parent().parent().prev().find('.radiocheck').addClass("selected") :
+						$(this).parent().parent().prev().find('.radiocheck').removeClass("selected");
+				}
+
+				if ($(this).attr('name') == 'wholeday'){
+					if ($(this).hasClass('selected')) {
+						$(this).parent().parent().next().find('input').css('color','#e0dfdf');
+					}else {
+						$(this).parent().parent().next().find('input').css('color','#656565');
+					}
+				}
+
+			});
+
+			unitList.find('> div').find('.up').off().on("click",function(){
+				var tval = parseInt($(this).prev().val()) + 1;
+				if ($(this).hasClass('hours')) {
+					tval = (tval == 24) ? 0:tval;
+				}else {
+					tval = (tval == 60) ? 0:tval;
+				}
+
+				if(tval < 10) {
+					tval = '0' + tval.toString();
+				}else{
+					tval = tval.toString();
+				}
+				$(this).prev().val(tval);
+				$(this).prev().attr('value',tval);
+			});
+
+			unitList.find('> div').find('.down').off().on("click",function(){
+				var tval = parseInt($(this).prev().prev().val()) - 1;
+				if ($(this).hasClass('hours')) {
+					tval = (tval < 0) ? 23:tval;
+				}else {
+					tval = (tval < 0) ? 59:tval;
+				}
+
+				if(tval < 10) {
+					tval = '0' + tval.toString();
+				}else{
+					tval = tval.toString();
+				}
+				$(this).prev().prev().val(tval);
+				$(this).prev().prev().attr('value',tval);
+			});
+
+			unitList.find('.select').off().on("click",function(e){
+				e.stopPropagation();
+				if(!$(this).hasClass("open")){
+					$(common.el.select).removeClass("open");
+					$("aside").slideUp(100);
+				};
+				$(this).toggleClass("open");
+				$(this).find("aside").slideToggle(100);
+			}).find("a").off().on("click",function(){
+				$(this).parent().parent().find("h3").html($(this).html()+"<icon></icon>");
+				var unit = $(this).parent().parent().parent().parent();
+				if ($(this).hasClass('closetimeunit')){
+					$(this).parent().parent().find("h3").addClass('closetimeunit');
+					$(this).parent().parent().find("h3").removeClass('opentimeunit');
+					unit.find('.radiocheck').css('border','1px solid #e0dfdf');
+					unit.find('input[type="text"]').css('color','#e0dfdf');
+				}else {
+					$(this).parent().parent().find("h3").addClass('opentimeunit');
+					$(this).parent().parent().find("h3").removeClass('closetimeunit');
+					unit.find('.radiocheck').css('border','1px solid #00c8e0');
+					unit.find('input[type="text"]').css('color','#656565');
+				}
+			});
+
+		},
+
 		/**
 		 * 获取关联Station信息列表
 		 */

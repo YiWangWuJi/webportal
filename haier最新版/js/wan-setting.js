@@ -132,7 +132,6 @@ var wanIndex = {
 					break;
 				}
 				var mtu  = data.info.mtu;
-				console.log(mtu);
 				//TODO-- wait 邦天提供正确的接口
 				//mtu ? $('#pppoe_mtu').removeClass('selected') : $('#pppoe_mtu').addClass('selected');//回显MTU
 				//获取对应protocol为PPPoE的wan口基本信息
