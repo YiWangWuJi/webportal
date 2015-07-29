@@ -168,6 +168,11 @@ footer p {text-align: center; padding-top: 60px; }
 .time_select section { min-width:70px; }
 .time_select section aside { min-width:70px; }
 .time_select n { margin:0 5px; }
+.time_select icon.up   {position: absolute; right: 7px; top: 7px; display: block; width: 13px; height: 6px; background: url(../images/bg.png) -47px 0 no-repeat; }
+.time_select icon.down {position: absolute; right: 7px; bottom: 7px; display: block; width: 13px; height: 6px; background: url(../images/bg.png) -47px -8px no-repeat; }
+.time_select div   {border:1px solid #e0dfdf;display:inline-block;padding-right:15px;position:relative;border-radius: 5px }
+.time_select div   {min-width:70px; max-height:30px}
+.time_select input {border:none; outline:none; height:20px; line-height:20px; width: 48px; position: relative; top:-2px; text-align: center; padding: 0;}
 .home { position:absolute; width:100%; left:0px; top:0px; background:#fff; left: 100%; }
 .home_icon { width:9px; height: 18px; background:url(../images/home.png) no-repeat;margin: 15px 20px 0 0; }
 .spinner {
