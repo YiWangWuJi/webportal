@@ -21,7 +21,8 @@ var common = {
 		radioc : ".radiocheck",	//选择按钮
 		pw	   : ".password", 	//密码输入框
 		check  : ".checkbox", 	//开关按钮
-		select : ".select",		//下拉框
+		//select : ".select",		//下拉框
+		select : ".wan_select",		//下拉框
 		iptext : ".iptext",		//DNS地址
 		slide  : "i.open",		//收缩箭头
 		infor  : ".infor",		//右边导航
@@ -212,7 +213,7 @@ var common = {
 		*	下拉选择框
 		*/
 		selectList : function(){
-			$(common.el.select).off().on("click",function(e){
+			$(common.el.select).off().on("click",".select",function(e){
 				e.stopPropagation();
 				if(!$(this).hasClass("open")){
 					$(common.el.select).removeClass("open");
@@ -536,7 +537,8 @@ $(window).on("popstate",function(){
 /**
  * 临时写死调用rpc的url(业务类型和token需要自己拼接)
  */
-var rpcUrl = common.getRpcURL();
+//var rpcUrl = common.getRpcURL();
+var rpcUrl = 'http://192.168.68.2/api/v1/';
 /**
  * 临时写死token
  */
