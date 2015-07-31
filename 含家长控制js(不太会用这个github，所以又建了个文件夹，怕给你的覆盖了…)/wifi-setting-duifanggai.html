@@ -1,0 +1,230 @@
+<section class="infor_box">
+	<h2><icon class="wifiicon"></icon>无线（wifi）设置</h2>
+	<!-- 拨号上网 -->
+	<ul class="wan_select">
+		<li class="check_list">
+			<span>2.4G</span>
+			<label><icon name="2G_enable" class="checkbox"><i></i></icon><input type="checkbox"></label>
+		</li>
+		<hr>
+		<li class="text">
+			<span>无线名称</span>
+			<input  value="" placeholder="" type="text" name="2G_ssid">
+		</li>
+		<li class="check_list">
+			<span>是否广播SSID</span>
+			<label><icon name="2G_hidden" class="checkbox"><i></i></icon><input type="checkbox"></label>
+		</li>
+		<li class="select_list wifit">
+			<span>加密方式</span>
+			<section class="select" id="2G_authMode">
+				<h3>不加密<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value="OPEN">不加密</a>
+					<a href="javascript:void(0);" value="WPAPSK">WPA-PSK加密</a>
+					<a href="javascript:void(0);" value="WPA2PSK">WPA2-PSK加密</a>
+				</aside>
+			</section>
+		</li>
+		<li class="select_list wifit" id="2G_suanfa_li">
+			<span>加密算法</span>
+			<section class="select" id="2G_enctype">
+				<h3>AES/TKIP兼容<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value="AESTKIP">AES/TKIP兼容</a>
+					<a href="javascript:void(0);" value="TKIP">TKIP兼容</a>
+					<a href="javascript:void(0);" value="AES">AES兼容</a>
+				</aside>
+			</section>
+		</li>
+		<li class="password" id="2G_password_li">
+			<span>密码</span>
+			<input type="password" name="2G_password">
+			<icon></icon>
+		</li>
+		<li class="select_list wifit">
+			<span>传输功率</span>
+			<section class="select" id="2G_txpower">
+				<h3>正常模式<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value=20>孕妇模式</a>
+					<a href="javascript:void(0);" value=60>正常模式</a>
+					<a href="javascript:void(0);" value=100>穿墙模式</a>
+				</aside>
+			</section>
+		</li>
+		<li>
+			<p>如非必要，请勿改动下列设置。</p>
+		</li>
+		<li class="select_list wifit">
+			<span>网络模式</span>
+			<section class="select" id="2G_mode">
+				<h3>11B<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value=1>11B</a>
+					<a href="javascript:void(0);" value=4>11G</a>
+					<a href="javascript:void(0);" value=6>11N only with 2.4G</a>
+					<a href="javascript:void(0);" value=7>11G/N</a>
+					<a href="javascript:void(0);" value=9>11B/G/N default</a>
+				</aside>
+			</section>
+		</li>
+		<li class="select_list wifit">
+			<span>信道</span>
+			<section class="select" id="2G_channel">
+				<h3>自动<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value=0>自动</a>
+					<a href="javascript:void(0);" value=1>信道1</a>
+					<a href="javascript:void(0);" value=2>信道2</a>
+					<a href="javascript:void(0);" value=3>信道3</a>
+					<a href="javascript:void(0);" value=4>信道4</a>
+					<a href="javascript:void(0);" value=5>信道5</a>
+					<a href="javascript:void(0);" value=6>信道6</a>
+					<a href="javascript:void(0);" value=7>信道7</a>
+					<a href="javascript:void(0);" value=8>信道8</a>
+					<a href="javascript:void(0);" value=9>信道9</a>
+					<a href="javascript:void(0);" value=10>信道10</a>
+					<a href="javascript:void(0);" value=11>信道11</a>
+					<a href="javascript:void(0);" value=12>信道12</a>
+					<a href="javascript:void(0);" value=13>信道13</a>
+				</aside>
+			</section>
+		</li>
+		<li class="select_list wifit">
+			<span>频道宽带</span>
+			<section class="select" id="2G_htmode">
+				<h3>20Mhz<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value=0>20Mhz</a>
+					<a href="javascript:void(0);" value=1>20/40Mhz</a>
+				</aside>
+			</section>
+			<h5><icon></icon>会根据当前无线网络环境自动选择20M或40M频宽</h5>
+		</li>
+		<li class="select_list">
+			<span>beacon时槽</span>
+			<input value="100" type="number" name="2G_beacon">  ms(范围：20-1024)
+		</li>
+		
+		<hr class="line">
+		<li class="check_list">
+			<span>5G</span>
+			<label><icon name="5G_enable" class="checkbox"><i></i></icon><input type="checkbox"></label>
+			<p>
+		</li>
+		<li class="radio_list">
+			<span></span>
+			<label style="width:auto"><icon id="same_2G_icon" onclick="javascript:wifiIndex.eventList.bindSame2GRadio();" class="radiocheck"></icon><input name="link" type="radio">应用与2.4G相同的设置</label></p>
+		</li>
+		<hr>
+		<li class="text">
+			<span>无线名称</span>
+			<input  value="" placeholder="" type="text" name="5G_ssid">
+		</li>
+		<!-- 应用与2G相同配置开始 -->		
+		<div class="same_2G" style="display: block;">
+		<li class="check_list">
+			<span>是否广播SSID</span>
+			<label><icon name="5G_hidden" class="checkbox"><i></i></icon><input type="checkbox"></label>
+		</li>
+		<li class="select_list wifit">
+			<span>加密方式</span>
+			<section class="select" id="5G_authMode">
+				<h3>不加密<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value="OPEN">不加密</a>
+					<a href="javascript:void(0);" value="WPAPSK">WPA-PSK加密</a>
+					<a href="javascript:void(0);" value="WPA2PSK">WPA2-PSK加密</a>
+				</aside>
+			</section>
+		</li>
+		<li class="select_list wifit" id="5G_suanfa_li">
+			<span>加密算法</span>
+			<section class="select" id="5G_enctype">
+				<h3>AES/TKIP兼容<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value="AESTKIP">AES/TKIP兼容</a>
+					<a href="javascript:void(0);" value="TKIP">TKIP兼容</a>
+					<a href="javascript:void(0);" value="AES">AES兼容</a>
+				</aside>
+			</section>
+		</li>
+		<li class="password" id="5G_password_li">
+			<span>密码</span>
+			<input type="password" name="5G_password">
+			<icon></icon>
+		</li>
+		<li class="select_list wifit">
+			<span>传输功率</span>
+			<section class="select" id="5G_txpower">
+				<h3>正常模式<icon></icon></h3>
+				<aside>
+					<a href="javascript:void(0);" value=20>孕妇模式</a>
+					<a href="javascript:void(0);" value=60>正常模式</a>
+					<a href="javascript:void(0);" value=100>穿墙模式</a>
+				</aside>
+			</section>
+		</li>
+		</div>
+		<!-- 应用与2G相同配置结束 -->		
+		<li><p>如非必要，请勿改动下列设置。</p></li>
+		<li class="select_list wifit">
+			<span>网络模式</span>
+			<section class="select" id="5G_mode">
+				<h3>11B<icon></icon></h3>
+				<aside>
+					<a href="javascript:vovalue(0);" value=1>11B</a>
+					<a href="javascript:vovalue(0);" value=2>11A</a>
+					<a href="javascript:vovalue(0);" value=3>11A/B/G</a>
+					<a href="javascript:vovalue(0);" value=4>11G</a>
+					<a href="javascript:vovalue(0);" value=5>11A/B/G/N</a>
+					<a href="javascript:vovalue(0);" value=6>11N only with 2.4G</a>
+					<a href="javascript:vovalue(0);" value=7>11G/N</a>
+					<a href="javascript:vovalue(0);" value=8>11A/N</a>
+					<a href="javascript:vovalue(0);" value=9>11B/G/N</a>
+					<a href="javascript:vovalue(0);" value=10>11A/G/N</a>
+					<a href="javascript:vovalue(0);" value=11>11N only with 5G</a>
+					<a href="javascript:vovalue(0);" value=12>11B/G/N/A/AC</a>
+					<a href="javascript:vovalue(0);" value=13>11G/N/A/AC</a>
+					<a href="javascript:vovalue(0);" value=14>11N/A/AC default</a>
+				</asvaluee>
+			</section>
+		</li>
+		<li class="select_list wifit">
+			<span>信道</span>
+			<section class="select" id="5G_channel">
+				<h3>自动<icon></icon></h3>
+				<aside>
+					<a href="javascript:vovalue(0);" value=0>自动</a>
+					<a href="javascript:vovalue(0);" value=149>信道149</a>
+					<a href="javascript:vovalue(0);" value=153>信道153</a>
+					<a href="javascript:vovalue(0);" value=157>信道157</a>
+					<a href="javascript:vovalue(0);" value=161>信道161</a>
+					<a href="javascript:vovalue(0);" value=165>信道165</a>
+				</aside>
+			</section>
+		</li>
+		<li class="select_list wifit">
+			<span>频道宽带</span>
+			<section class="select" id="5G_htmode">
+				<h3>20Mhz<icon></icon></h3>
+				<aside>
+					<a href="javascript:vovalue(0);" value=0>20Mhz</a>
+					<a href="javascript:vovalue(0);" value=1>20/40Mhz</a>
+					<a href="javascript:vovalue(0);" value=2>20/40/80Mhz</a>
+				</aside>
+			</section>
+			<h5><icon></icon>会根据当前无线网络环境自动选择20M,40M或80M频宽</h5>
+		</li>
+		<div class="same_2G" style="display: block;">
+		<li class="select_list">
+			<span>beacon时槽</span>
+			<input value="100" type="number" name="5G_beacon">  ms(范围：20-1024)
+		</li>
+		</div>
+		
+		<li><button style="margin-top:60px;" class="enterbut">保存设置</button></li>
+	</ul>
+</section>
+<script src="js/wireless-setting.js"></script>
